@@ -1,7 +1,9 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Linkedin, Instagram, Twitter } from 'lucide-react';
-import { teamMembers } from '../../data/team';
+import { teamMembers as defaultTeamMembers } from '../../data/team';
 import { SectionTitle, ScrollReveal } from '../ui';
+import api from '../../services/api';
 
 const TeamMemberCard = ({ member, index }) => {
   return (
@@ -80,6 +82,34 @@ const TeamMemberCard = ({ member, index }) => {
 };
 
 const Team = () => {
+  const [teamMembers, setTeamMembers] = useState(defaultTeamMembers);
+
+  useEffect(() => {
+    const fetchTeam = async () => {
+      try {
+        const response = await api.request('/team');
+        if (response.success && response.data?.length > 0) {
+          const transformed = response.data.map(m => ({
+            id: m.id,
+            name: m.name,
+            role: m.role,
+            avatar: m.image?.startsWith('http') ? m.image : `http://127.0.0.1:8000${m.image}`,
+            skills: m.skills || [],
+            social: {
+              instagram: m.social_links?.instagram ? `https://instagram.com/${m.social_links.instagram}` : null,
+              linkedin: m.social_links?.linkedin ? `https://linkedin.com/in/${m.social_links.linkedin}` : null,
+              twitter: m.social_links?.twitter ? `https://twitter.com/${m.social_links.twitter}` : null,
+            }
+          }));
+          setTeamMembers(transformed);
+        }
+      } catch (error) {
+        console.error('Error fetching team:', error);
+      }
+    };
+    fetchTeam();
+  }, []);
+
   return (
     <section className="section-padding relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
@@ -89,7 +119,7 @@ const Team = () => {
             background: 'radial-gradient(circle, rgba(217,70,239,0.1) 0%, transparent 60%)',
             filter: 'blur(80px)',
           }}
-          animate={{ scale: [1, 1.2, 1], x: [0, 30, 0] }}
+          animate={{ scale: [1, 1.2, 1] }}
           transition={{ duration: 12, repeat: Infinity }}
         />
       </div>

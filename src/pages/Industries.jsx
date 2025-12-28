@@ -78,7 +78,7 @@ const Industries = () => {
 
                       <div className="absolute inset-0 p-6 flex flex-col justify-end">
                         <motion.div
-                          className={`w-16 h-16 rounded-2xl bg-gradient-to-r ${industry.color} flex items-center justify-center mb-4 shadow-lg`}
+                          className={`w-16 h-16 rounded-2xl bg-gradient-to-r ${industry.color || 'from-primary-500 to-secondary-500'} flex items-center justify-center mb-4 shadow-lg`}
                           whileHover={{ rotate: [0, -5, 5, 0] }}
                         >
                           {industry.icon && iconMap[industry.icon] && 
@@ -87,7 +87,7 @@ const Industries = () => {
                         </motion.div>
 
                         <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-primary-400 transition-colors">
-                          {industry.shortTitle}
+                          {industry.short_title || industry.title}
                         </h3>
 
                         <p className="text-dark-300 mb-4 line-clamp-2">
@@ -95,7 +95,7 @@ const Industries = () => {
                         </p>
 
                         <div className="flex flex-wrap gap-2 mb-4">
-                          {industry.services.slice(0, 3).map((service, i) => (
+                          {(industry.services || []).slice(0, 3).map((service, i) => (
                             <span
                               key={i}
                               className="px-3 py-1 rounded-full bg-white/10 text-white text-xs"

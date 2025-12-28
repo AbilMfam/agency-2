@@ -296,6 +296,32 @@ class ApiService {
     return this.request(`/home-cards${query}`);
   }
 
+  // Web Projects
+  async getWebProjects(type = null) {
+    const query = type && type !== 'all' ? `?type=${type}` : '';
+    return this.request(`/web-projects${query}`);
+  }
+
+  async getWebProject(slug) {
+    return this.request(`/web-projects/${slug}`);
+  }
+
+  async getWebProjectTypes() {
+    return this.request('/web-projects/types');
+  }
+
+  async createWebProject(data) {
+    return this.request('/admin/web-projects', { method: 'POST', body: JSON.stringify(data) });
+  }
+
+  async updateWebProject(id, data) {
+    return this.request(`/admin/web-projects/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+  }
+
+  async deleteWebProject(id) {
+    return this.request(`/admin/web-projects/${id}`, { method: 'DELETE' });
+  }
+
   async createHomeCard(data) {
     return this.request('/admin/home-cards', { method: 'POST', body: JSON.stringify(data) });
   }

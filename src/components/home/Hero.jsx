@@ -52,7 +52,6 @@ const Hero = () => {
           animate={{
             scale: [1, 1.5, 1],
             opacity: [0.2, 0.4, 0.2],
-            x: [0, 50, 0],
             y: [0, -30, 0],
           }}
           transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}

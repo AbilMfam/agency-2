@@ -1,16 +1,23 @@
 import { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Pause, Volume2, VolumeX, Maximize, Minimize } from 'lucide-react';
 
 const VideoPlayer = ({ 
   src, 
   poster, 
+  thumbnail,
+  title,
+  subtitle,
+  icon,
   className = '', 
   autoPlay = false, 
   muted = true, 
   loop = true,
   controls = true,
-  aspectRatio = '16/9'
+  aspectRatio = '16/9',
+  showOverlay = true,
+  onPlay,
+  onPause
 }) => {
   const [isPlaying, setIsPlaying] = useState(autoPlay);
   const [isMuted, setIsMuted] = useState(muted);
@@ -18,8 +25,12 @@ const VideoPlayer = ({
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
+  const [hasStarted, setHasStarted] = useState(autoPlay);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [showControls, setShowControls] = useState(true);
   const videoRef = useRef(null);
   const containerRef = useRef(null);
+  const controlsTimeoutRef = useRef(null);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -47,12 +58,34 @@ const VideoPlayer = ({
     const video = videoRef.current;
     if (!video) return;
 
+    if (!hasStarted) {
+      setHasStarted(true);
+    }
+
     if (isPlaying) {
       video.pause();
+      onPause?.();
     } else {
       video.play();
+      onPlay?.();
     }
     setIsPlaying(!isPlaying);
+  };
+
+  const handleVideoLoaded = () => {
+    setIsLoaded(true);
+  };
+
+  const handleMouseMove = () => {
+    setShowControls(true);
+    if (controlsTimeoutRef.current) {
+      clearTimeout(controlsTimeoutRef.current);
+    }
+    if (isPlaying) {
+      controlsTimeoutRef.current = setTimeout(() => {
+        setShowControls(false);
+      }, 3000);
+    }
   };
 
   const toggleMute = () => {
@@ -104,45 +137,126 @@ const VideoPlayer = ({
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
+  const displayThumbnail = thumbnail || poster;
+
   return (
     <div 
       ref={containerRef}
-      className={`relative bg-black rounded-2xl overflow-hidden ${className}`}
+      className={`relative bg-dark-900 rounded-2xl overflow-hidden ${className}`}
       style={{ aspectRatio }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={() => isPlaying && setShowControls(false)}
     >
-      <video
-        ref={videoRef}
-        src={src}
-        poster={poster}
-        className="w-full h-full object-cover"
-        autoPlay={autoPlay}
-        muted={isMuted}
-        loop={loop}
-        playsInline
-      />
-      
-      {controls && (
-        <>
-          {/* Overlay Controls */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/60 opacity-0 hover:opacity-100 transition-opacity duration-300">
+      {/* Thumbnail Overlay - shown before video starts */}
+      <AnimatePresence>
+        {!hasStarted && displayThumbnail && (
+          <motion.div
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="absolute inset-0 z-10"
+          >
+            <img
+              src={displayThumbnail}
+              alt={title || 'Video thumbnail'}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/40" />
+            
+            {/* Title & Subtitle Overlay */}
+            {(title || subtitle || icon) && showOverlay && (
+              <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
+                {icon && (
+                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-r from-primary-500 to-secondary-500 flex items-center justify-center mb-3">
+                    {typeof icon === 'string' ? (
+                      <span className="text-xl">{icon}</span>
+                    ) : (
+                      icon
+                    )}
+                  </div>
+                )}
+                {title && (
+                  <h3 className="text-white font-bold text-lg md:text-xl mb-1">{title}</h3>
+                )}
+                {subtitle && (
+                  <p className="text-dark-300 text-sm md:text-base">{subtitle}</p>
+                )}
+              </div>
+            )}
+
+            {/* Big Play Button */}
             <div className="absolute inset-0 flex items-center justify-center">
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={togglePlay}
-                className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border-2 border-white/40"
+                className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-r from-primary-500 to-secondary-500 flex items-center justify-center shadow-2xl shadow-primary-500/30"
+              >
+                <Play className="w-6 h-6 md:w-8 md:h-8 text-white ml-1" fill="white" />
+              </motion.button>
+            </div>
+
+            {/* Duration Badge */}
+            {duration > 0 && (
+              <div className="absolute top-4 right-4">
+                <span className="px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-sm text-white text-xs font-medium">
+                  {formatTime(duration)}
+                </span>
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <video
+        ref={videoRef}
+        src={src}
+        poster={!displayThumbnail ? poster : undefined}
+        className="w-full h-full object-cover"
+        autoPlay={autoPlay}
+        muted={isMuted}
+        loop={loop}
+        playsInline
+        onLoadedMetadata={handleVideoLoaded}
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
+      />
+      
+      {controls && hasStarted && (
+        <>
+          {/* Overlay Controls */}
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: showControls ? 1 : 0 }}
+            className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/40 transition-opacity duration-300"
+          >
+            <div className="absolute inset-0 flex items-center justify-center">
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={togglePlay}
+                className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border-2 border-white/40"
               >
                 {isPlaying ? (
-                  <Pause className="w-6 h-6 md:w-8 md:h-8 text-white" />
+                  <Pause className="w-5 h-5 md:w-6 md:h-6 text-white" />
                 ) : (
-                  <Play className="w-6 h-6 md:w-8 md:h-8 text-white ml-1" />
+                  <Play className="w-5 h-5 md:w-6 md:h-6 text-white ml-1" />
                 )}
               </motion.button>
             </div>
-          </div>
+          </motion.div>
 
           {/* Bottom Controls */}
-          <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: showControls ? 1 : 0, y: showControls ? 0 : 10 }}
+            className="absolute bottom-0 left-0 right-0 p-3 md:p-4 bg-gradient-to-t from-black/80 to-transparent">
+            {/* Title in controls if provided */}
+            {title && (
+              <div className="mb-2">
+                <p className="text-white text-sm font-medium truncate">{title}</p>
+              </div>
+            )}
             {/* Progress Bar */}
             <div className="mb-3">
               <input
@@ -208,7 +322,7 @@ const VideoPlayer = ({
                 )}
               </motion.button>
             </div>
-          </div>
+          </motion.div>
         </>
       )}
 

@@ -10,3 +10,5 @@ export { default as Packages } from './Packages';
 export { default as Testimonials } from './Testimonials';
 export { default as Reels } from './Reels';
 export { default as HomeCards } from './HomeCards';
+export { default as WebProjects } from './WebProjects';
+export { default as TeamMembers } from './TeamMembers';

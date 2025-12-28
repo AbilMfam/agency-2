@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { Upload, X, Image as ImageIcon } from 'lucide-react';
 
-const API_URL = 'http://localhost:8000';
+const API_URL = 'http://127.0.0.1:8000';
 
 const ImageUpload = ({ value, onChange, folder = 'uploads', label = 'تصویر' }) => {
   const [uploading, setUploading] = useState(false);

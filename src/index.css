@@ -13,6 +13,7 @@
 html {
   scroll-behavior: smooth;
   direction: rtl;
+  overflow-x: hidden;
 }
 
 body {
@@ -23,6 +24,14 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  position: relative;
+  width: 100%;
+}
+
+#root {
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
 }
 
 ::-webkit-scrollbar {
@@ -84,6 +93,19 @@ body {
   .mobile-overflow-hidden {
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
+    position: relative;
+    width: 100%;
+  }
+
+  .motion-safe {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+  .overflow-clip {
+    overflow: clip;
+    overflow-clip-margin: content-box;
   }
 
   .text-shadow-glow {

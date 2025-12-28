@@ -76,7 +76,7 @@ const Industry = () => {
       <section className="relative min-h-[70vh] flex items-center overflow-hidden">
         <div className="absolute inset-0">
           <img
-            src={industry.heroImage}
+            src={industry.hero_image || industry.image?.startsWith('http') ? industry.image : `http://127.0.0.1:8000${industry.image}`}
             alt={industry.title}
             className="w-full h-full object-cover"
           />
@@ -101,7 +101,7 @@ const Industry = () => {
               </h1>
 
               <p className="text-xl text-dark-300 mb-8 leading-relaxed">
-                {industry.fullDescription}
+                {industry.full_description || industry.description}
               </p>
 
               <div className="flex flex-wrap gap-4">
@@ -149,13 +149,13 @@ const Industry = () => {
           <ScrollReveal>
             <SectionTitle
               subtitle="خدمات تخصصی"
-              title={`خدمات ما برای ${industry.shortTitle}`}
+              title={`خدمات ما برای ${industry.short_title || industry.title}`}
               description="خدمات تخصصی طراحی شده برای نیازهای این صنعت"
             />
           </ScrollReveal>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {industry.services.map((service, index) => (
+            {(industry.services || []).map((service, index) => (
               <ScrollReveal key={index} delay={index * 0.1}>
                 <motion.div
                   whileHover={{ y: -5, scale: 1.02 }}

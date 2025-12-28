@@ -12,9 +12,21 @@ const defaultReels = [
   { id: 5, title: 'آموزش ادیت حرفه‌ای', views: '۱۵.۳K', likes: '۳.۲K', comments: '۱۷۴', gradient: 'from-emerald-500 to-teal-600' },
 ];
 
-const ReelCard = ({ reel, index }) => {
+const ReelCard = ({ reel, index, onPlay }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const videoRef = useRef(null);
+
+  const handlePlay = () => {
+    if (reel.video_url && videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
 
   return (
     <motion.div
@@ -23,23 +35,46 @@ const ReelCard = ({ reel, index }) => {
       viewport={{ once: true }}
       transition={{ delay: index * 0.1 }}
       onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseLeave={() => {
+        setIsHovered(false);
+        if (isPlaying && videoRef.current) {
+          videoRef.current.pause();
+          setIsPlaying(false);
+        }
+      }}
       className="relative aspect-[9/16] rounded-3xl overflow-hidden group cursor-pointer flex-shrink-0 w-[220px] md:w-[260px]"
     >
-      <div className={`absolute inset-0 bg-gradient-to-br ${reel.gradient}`}>
+      {/* Background - Thumbnail or Gradient */}
+      <div className={`absolute inset-0 ${!reel.thumbnail ? `bg-gradient-to-br ${reel.gradient}` : ''}`}>
+        {reel.thumbnail ? (
+          <img 
+            src={reel.thumbnail} 
+            alt={reel.title}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-8xl opacity-30">🎬</div>
+          </div>
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-        
-        <motion.div
-          className="absolute inset-0 flex items-center justify-center"
-          animate={{ scale: isHovered ? 1.1 : 1 }}
-          transition={{ duration: 0.4 }}
-        >
-          <div className="text-8xl opacity-30">🎬</div>
-        </motion.div>
       </div>
 
+      {/* Video Element - Hidden until played */}
+      {reel.video_url && (
+        <video
+          ref={videoRef}
+          src={reel.video_url}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${isPlaying ? 'opacity-100' : 'opacity-0'}`}
+          muted
+          loop
+          playsInline
+        />
+      )}
+
+      {/* Play Button Overlay */}
       <AnimatePresence>
-        {isHovered && (
+        {(isHovered || !reel.thumbnail) && !isPlaying && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -52,19 +87,34 @@ const ReelCard = ({ reel, index }) => {
               exit={{ scale: 0 }}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              onClick={() => setIsPlaying(!isPlaying)}
-              className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30"
+              onClick={handlePlay}
+              className="w-16 h-16 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 flex items-center justify-center shadow-lg shadow-pink-500/30"
             >
-              {isPlaying ? (
-                <Pause className="w-6 h-6 text-white" />
-              ) : (
-                <Play className="w-6 h-6 text-white mr-[-2px]" />
-              )}
+              <Play className="w-6 h-6 text-white mr-[-2px]" fill="white" />
             </motion.button>
           </motion.div>
         )}
       </AnimatePresence>
 
+      {/* Pause Button when playing */}
+      {isPlaying && isHovered && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="absolute inset-0 flex items-center justify-center"
+        >
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={handlePlay}
+            className="w-14 h-14 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center"
+          >
+            <Pause className="w-6 h-6 text-white" />
+          </motion.button>
+        </motion.div>
+      )}
+
+      {/* Bottom Info */}
       <div className="absolute bottom-0 left-0 right-0 p-4">
         <h4 className="text-white font-bold text-lg mb-3">{reel.title}</h4>
         
@@ -84,6 +134,7 @@ const ReelCard = ({ reel, index }) => {
         </div>
       </div>
 
+      {/* Side Actions */}
       <div className="absolute top-4 right-4 flex flex-col gap-3">
         <motion.button
           whileHover={{ scale: 1.2 }}
@@ -101,9 +152,10 @@ const ReelCard = ({ reel, index }) => {
         </motion.button>
       </div>
 
+      {/* Type Badge */}
       <div className="absolute top-4 left-4">
         <div className="px-3 py-1 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 text-white text-xs font-bold">
-          ریلز
+          {reel.video_type === 'horizontal' ? 'ویدیو' : 'ریلز'}
         </div>
       </div>
     </motion.div>

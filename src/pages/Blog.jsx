@@ -134,7 +134,7 @@ const Blog = () => {
   useEffect(() => {
     const fetchBlogPosts = async () => {
       try {
-        const response = await api.getPublicBlogPosts();
+        const response = await api.getBlogPosts();
         // Transform data to match expected format
         const transformedPosts = response.data.map(post => ({
           id: post.id,

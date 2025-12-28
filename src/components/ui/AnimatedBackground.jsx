@@ -5,36 +5,37 @@ const AnimatedBackground = ({ variant = 'default' }) => {
     default: (
       <>
         <motion.div
-          className="absolute top-0 right-0 w-[800px] h-[800px] rounded-full opacity-30"
+          className="absolute top-0 right-0 w-[600px] h-[600px] md:w-[800px] md:h-[800px] rounded-full opacity-30"
           style={{
             background: 'radial-gradient(circle, rgba(249,115,22,0.4) 0%, transparent 70%)',
+            willChange: 'transform, opacity',
           }}
           animate={{
-            scale: [1, 1.2, 1],
-            x: [0, 50, 0],
-            y: [0, -30, 0],
+            scale: [1, 1.1, 1],
+            opacity: [0.3, 0.4, 0.3],
           }}
           transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
         />
         <motion.div
-          className="absolute bottom-0 left-0 w-[600px] h-[600px] rounded-full opacity-30"
+          className="absolute bottom-0 left-0 w-[400px] h-[400px] md:w-[600px] md:h-[600px] rounded-full opacity-30"
           style={{
             background: 'radial-gradient(circle, rgba(217,70,239,0.4) 0%, transparent 70%)',
+            willChange: 'transform, opacity',
           }}
           animate={{
-            scale: [1, 1.3, 1],
-            x: [0, -40, 0],
-            y: [0, 40, 0],
+            scale: [1, 1.15, 1],
+            opacity: [0.3, 0.35, 0.3],
           }}
           transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
         />
         <motion.div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full opacity-20"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] md:w-[500px] md:h-[500px] rounded-full opacity-20"
           style={{
             background: 'radial-gradient(circle, rgba(6,182,212,0.4) 0%, transparent 70%)',
+            willChange: 'transform, opacity',
           }}
           animate={{
-            scale: [1, 1.4, 1],
+            scale: [1, 1.2, 1],
           }}
           transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
         />
@@ -43,60 +44,63 @@ const AnimatedBackground = ({ variant = 'default' }) => {
     hero: (
       <>
         <motion.div
-          className="absolute top-[-200px] right-[-200px] w-[1000px] h-[1000px] rounded-full"
+          className="absolute top-[-100px] right-[-100px] md:top-[-200px] md:right-[-200px] w-[600px] h-[600px] md:w-[800px] md:h-[800px] rounded-full"
           style={{
             background: 'radial-gradient(circle, rgba(249,115,22,0.3) 0%, rgba(249,115,22,0.1) 30%, transparent 70%)',
             filter: 'blur(60px)',
+            willChange: 'transform, opacity',
           }}
           animate={{
-            scale: [1, 1.1, 1],
-            rotate: [0, 10, 0],
+            scale: [1, 1.05, 1],
+            opacity: [0.8, 1, 0.8],
           }}
           transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
         />
         <motion.div
-          className="absolute bottom-[-300px] left-[-200px] w-[900px] h-[900px] rounded-full"
+          className="absolute bottom-[-150px] left-[-100px] md:bottom-[-300px] md:left-[-200px] w-[500px] h-[500px] md:w-[700px] md:h-[700px] rounded-full"
           style={{
             background: 'radial-gradient(circle, rgba(217,70,239,0.3) 0%, rgba(217,70,239,0.1) 30%, transparent 70%)',
             filter: 'blur(80px)',
+            willChange: 'transform, opacity',
           }}
           animate={{
-            scale: [1, 1.2, 1],
-            rotate: [0, -15, 0],
+            scale: [1, 1.1, 1],
+            opacity: [0.8, 1, 0.8],
           }}
           transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
         />
         <motion.div
-          className="absolute top-1/3 left-1/4 w-[600px] h-[600px] rounded-full"
+          className="absolute top-1/3 left-1/4 w-[400px] h-[400px] md:w-[600px] md:h-[600px] rounded-full"
           style={{
             background: 'radial-gradient(circle, rgba(6,182,212,0.25) 0%, transparent 60%)',
             filter: 'blur(50px)',
+            willChange: 'transform, opacity',
           }}
           animate={{
-            x: [0, 100, 0],
-            y: [0, -50, 0],
-            scale: [1, 1.3, 1],
+            scale: [1, 1.15, 1],
+            opacity: [0.7, 1, 0.7],
           }}
           transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
         />
         
-        <div className="absolute inset-0 overflow-hidden">
-          {[...Array(20)].map((_, i) => (
+        <div className="absolute inset-0 overflow-hidden hidden md:block">
+          {[...Array(12)].map((_, i) => (
             <motion.div
               key={i}
               className="absolute w-1 h-1 bg-white/20 rounded-full"
               style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
+                left: `${10 + (i * 7) % 80}%`,
+                top: `${10 + (i * 11) % 80}%`,
+                willChange: 'transform, opacity',
               }}
               animate={{
                 opacity: [0, 1, 0],
                 scale: [0, 1.5, 0],
               }}
               transition={{
-                duration: 3 + Math.random() * 2,
+                duration: 3 + (i % 3),
                 repeat: Infinity,
-                delay: Math.random() * 3,
+                delay: i * 0.3,
               }}
             />
           ))}
@@ -145,7 +149,7 @@ const AnimatedBackground = ({ variant = 'default' }) => {
   };
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ contain: 'paint layout' }}>
       {variants[variant]}
     </div>
   );

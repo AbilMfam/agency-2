@@ -24,3 +24,4 @@ export { default as FloatingActions } from './FloatingActions';
 export { default as ProjectTimeline } from './ProjectTimeline';
 export { default as BlurImage } from './BlurImage';
 export { default as MouseFollower } from './MouseFollower';
+export { default as VideoPlayer } from './VideoPlayer';

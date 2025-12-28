@@ -5,69 +5,73 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
 import { SectionTitle, ScrollReveal } from '../ui';
 import api from '../../services/api';
+import { testimonials as defaultTestimonials } from '../../data/testimonials';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import './Testimonials.css';
 
-const TestimonialCard = ({ testimonial }) => (
-  <motion.div
-    whileHover={{ y: -3 }}
-    className="relative p-6 h-[320px] rounded-2xl bg-gradient-to-br from-white/[0.08] to-white/[0.02] backdrop-blur-xl border border-white/10 group flex flex-col"
-    style={{ transformOrigin: 'center bottom' }}
-  >
-    <div className="absolute top-0 right-0 w-32 h-32 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-      <div className="absolute inset-0 bg-gradient-to-br from-primary-500/20 to-secondary-500/20 blur-3xl" />
-    </div>
-
+const TestimonialCard = ({ testimonial }) => {
+  console.log('Testimonial data:', testimonial);
+  return (
     <motion.div
-      initial={{ rotate: 0 }}
-      whileHover={{ rotate: 12 }}
-      transition={{ duration: 0.3 }}
+      whileHover={{ y: -3 }}
+      className="relative p-6 h-[320px] rounded-2xl bg-gradient-to-br from-white/[0.08] to-white/[0.02] backdrop-blur-xl border border-white/10 group flex flex-col"
+      style={{ transformOrigin: 'center bottom' }}
     >
-      <Quote className="w-10 h-10 text-primary-500/50 mb-4" />
-    </motion.div>
-    
-    <p className="text-dark-300 leading-relaxed mb-6 relative z-10 flex-grow">
-      "{testimonial.text}"
-    </p>
-    
-    <div className="flex items-center gap-1 mb-4">
-      {[...Array(testimonial.rating)].map((_, i) => (
-        <motion.div
-          key={i}
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: i * 0.1 }}
-        >
-          <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-        </motion.div>
-      ))}
-    </div>
-    
-    <div className="flex items-center gap-3 relative z-10">
-      <motion.div 
-        whileHover={{ rotate: 5 }}
-        className="w-12 h-12 rounded-full overflow-hidden shadow-lg shadow-primary-500/30"
-      >
-        <img 
-          src={testimonial.avatar} 
-          alt={testimonial.name}
-          className="w-full h-full object-cover"
-        />
-      </motion.div>
-      <div>
-        <h4 className="font-bold text-white">{testimonial.name}</h4>
-        <p className="text-sm text-dark-400">{testimonial.role}</p>
-        {testimonial.results && (
-          <p className="text-xs text-primary-400 mt-1">{testimonial.results}</p>
-        )}
+      <div className="absolute top-0 right-0 w-32 h-32 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-500/20 to-secondary-500/20 blur-3xl" />
       </div>
-    </div>
-  </motion.div>
-);
+
+      <motion.div
+        initial={{ rotate: 0 }}
+        whileHover={{ rotate: 12 }}
+        transition={{ duration: 0.3 }}
+      >
+        <Quote className="w-10 h-10 text-primary-500/50 mb-4" />
+      </motion.div>
+      
+      <p className="text-dark-300 leading-relaxed mb-6 relative z-10 flex-grow">
+        "{testimonial.text}"
+      </p>
+      
+      <div className="flex items-center gap-1 mb-4">
+        {[...Array(testimonial.rating)].map((_, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: i * 0.1 }}
+          >
+            <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+          </motion.div>
+        ))}
+      </div>
+      
+      <div className="flex items-center gap-3 relative z-10">
+        <motion.div 
+          whileHover={{ rotate: 5 }}
+          className="w-12 h-12 rounded-full overflow-hidden shadow-lg shadow-primary-500/30"
+        >
+          <img 
+            src={testimonial.avatar} 
+            alt={testimonial.name}
+            className="w-full h-full object-cover"
+          />
+        </motion.div>
+        <div className="flex flex-col">
+          <h4 className="font-bold text-white">{testimonial.name}</h4>
+          <p className="text-sm text-dark-400">{testimonial.role}</p>
+          {testimonial.results && (
+            <p className="text-xs text-primary-400 mt-1">{testimonial.results}</p>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+};
 
 const Testimonials = () => {
-  const [testimonials, setTestimonials] = useState([]);
+  const [testimonials, setTestimonials] = useState(defaultTestimonials);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -75,10 +79,19 @@ const Testimonials = () => {
       try {
         const response = await api.getTestimonials();
         if (response.success && response.data) {
-          setTestimonials(response.data);
+          // Map API fields to frontend expected fields
+          const mappedTestimonials = response.data.map(t => ({
+            ...t,
+            name: t.author,
+            text: t.content,
+            rating: t.rating || 5
+          }));
+          setTestimonials(mappedTestimonials);
         }
       } catch (error) {
         console.error('Error fetching testimonials:', error);
+        // Fallback to static data
+        setTestimonials(defaultTestimonials);
       } finally {
         setLoading(false);
       }
@@ -95,7 +108,7 @@ const Testimonials = () => {
             background: 'radial-gradient(circle, rgba(217,70,239,0.15) 0%, transparent 60%)',
             filter: 'blur(80px)',
           }}
-          animate={{ scale: [1, 1.2, 1], x: [0, 50, 0] }}
+          animate={{ scale: [1, 1.2, 1] }}
           transition={{ duration: 12, repeat: Infinity }}
         />
         <motion.div 

@@ -4,15 +4,31 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, Video, Film, Sparkles, Camera, FileText, Lightbulb, Share2, TrendingUp, Megaphone, Palette, Globe, Search, Smartphone, Users } from 'lucide-react';
 import { SectionTitle, ScrollReveal } from '../ui';
 import api from '../../services/api';
+import { services as defaultServices } from '../../data/services';
 
 const iconMap = {
-  Video, Film, Sparkles, Camera, FileText, Lightbulb, Share2, TrendingUp, Megaphone, Palette, Globe, Search, Smartphone, Users
+  Video,
+  Film,
+  Sparkles,
+  Camera,
+  FileText,
+  Lightbulb,
+  Share2,
+  TrendingUp,
+  Megaphone,
+  Palette,
+  Globe,
+  Search,
+  Smartphone,
+  Users
 };
 
 const ServiceCard = ({ service, index }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const IconComponent = iconMap[service.icon] || Video;
+  const IconComponent = typeof service.icon === 'string' ? iconMap[service.icon] : service.icon || Video;
   const features = Array.isArray(service.features) ? service.features : [];
+  
+  console.log('Service:', service.title, 'Icon:', service.icon, 'IconComponent:', IconComponent);
 
   return (
     <ScrollReveal delay={index * 0.1} variant="fadeUp">
@@ -38,7 +54,7 @@ const ServiceCard = ({ service, index }) => {
               className={`w-14 h-14 rounded-xl bg-gradient-to-r ${service.color || 'from-primary-500 to-secondary-500'} flex items-center justify-center mb-4 shadow-lg`}
               animate={{ y: isHovered ? -5 : 0 }}
             >
-              <IconComponent className="w-7 h-7 text-white" />
+              <Video className="w-7 h-7 text-white" />
             </motion.div>
             
             <h3 className="text-xl font-bold text-white mb-2 group-hover:text-primary-400 transition-colors">
@@ -72,8 +88,10 @@ const ServiceCard = ({ service, index }) => {
 };
 
 const Services = () => {
-  const [services, setServices] = useState([]);
+  const [services, setServices] = useState(defaultServices.slice(0, 6));
   const [loading, setLoading] = useState(true);
+  
+  console.log('Default services:', defaultServices);
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -84,6 +102,8 @@ const Services = () => {
         }
       } catch (error) {
         console.error('Error fetching services:', error);
+        // Fallback to static data
+        setServices(defaultServices.slice(0, 6));
       } finally {
         setLoading(false);
       }
@@ -100,7 +120,7 @@ const Services = () => {
             background: 'radial-gradient(circle, rgba(249,115,22,0.1) 0%, transparent 60%)',
             filter: 'blur(80px)',
           }}
-          animate={{ scale: [1, 1.2, 1], x: [0, 30, 0] }}
+          animate={{ scale: [1, 1.2, 1] }}
           transition={{ duration: 10, repeat: Infinity }}
         />
         <motion.div 
@@ -109,7 +129,7 @@ const Services = () => {
             background: 'radial-gradient(circle, rgba(217,70,239,0.1) 0%, transparent 60%)',
             filter: 'blur(80px)',
           }}
-          animate={{ scale: [1, 1.3, 1], x: [0, -30, 0] }}
+          animate={{ scale: [1, 1.3, 1] }}
           transition={{ duration: 12, repeat: Infinity }}
         />
       </div>

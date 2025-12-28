@@ -5,6 +5,8 @@ import { Button, Card, SectionTitle, ScrollReveal } from '../components/ui';
 import api from '../services/api';
 import { useState, useEffect } from 'react';
 import React from 'react';
+import { services as defaultServices } from '../data/services';
+
 
 const serviceGallery = {
   'video-production': [
@@ -57,7 +59,7 @@ const defaultGallery = [
 const ServiceDetail = () => {
   const { slug } = useParams();
   const [service, setService] = useState(null);
-  const [services, setServices] = useState([]);
+  const [services, setServices] = useState(defaultServices);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -78,6 +80,8 @@ const ServiceDetail = () => {
         }
       } catch (error) {
         console.error('Error fetching service data:', error);
+        // Fallback to static data
+        setService(defaultServices.find(s => s.id === slug || s.slug === slug));
       } finally {
         setLoading(false);
       }
@@ -110,7 +114,7 @@ const ServiceDetail = () => {
   }
 
   const relatedServices = services.filter(s => s.id !== service.id).slice(0, 3);
-  const gallery = serviceGallery[slug] || defaultGallery;
+  const gallery = service?.gallery || serviceGallery[slug] || defaultGallery;
   
   // Default packages if not provided by API
   const packages = service.packages || [
@@ -310,22 +314,23 @@ const ServiceDetail = () => {
                 <Card className="p-6 mt-6">
                   <h4 className="font-bold text-white mb-4">خدمات مرتبط</h4>
                   <div className="space-y-3">
-                    {relatedServices?.map((s) => (
+                    {relatedServices?.map((s) => {
+                      console.log('Related service:', s.title, 'Icon:', s.icon, 'IconMap:', iconMap[s.icon]);
+                      return (
                       <Link
                         key={s.id}
                         to={`/services/${s.slug}`}
                         className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors"
                       >
                         <div className={`w-10 h-10 rounded-lg bg-gradient-to-r ${s.color} flex items-center justify-center`}>
-                          {s.icon && iconMap[s.icon] && 
-                            React.createElement(iconMap[s.icon], { className: "w-5 h-5 text-white" })
-                          }
+                          <Video className="w-5 h-5 text-white" />
                         </div>
                         <span className="text-dark-300 hover:text-white transition-colors">
                           {s.title}
                         </span>
                       </Link>
-                    ))}
+                      );
+                    })}
                   </div>
                 </Card>
               </motion.div>

@@ -1,22 +1,36 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ExternalLink, Star } from 'lucide-react';
-import { webProjects, projectTypes } from '../../data/webProjects';
+import { ArrowLeft, ExternalLink, Globe, Smartphone, Search, ShoppingCart, Palette, Code } from 'lucide-react';
+import { webProjects as defaultProjects, projectTypes as defaultTypes } from '../../data/webProjects';
 import { SectionTitle, ScrollReveal } from '../ui';
+import api from '../../services/api';
+
+const iconMap = {
+  Globe,
+  Smartphone,
+  Search,
+  ShoppingCart,
+  Palette,
+  Code,
+};
 
 const ProjectCard = ({ project, index }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const IconComponent = project.icon;
+  const IconComponent = typeof project.icon === 'string' ? iconMap[project.icon] : project.icon || iconMap.Globe;
+  const projectSlug = project.slug || project.id;
+  const technologies = project.technologies || [];
+  const results = project.results || {};
 
   return (
     <ScrollReveal delay={index * 0.1}>
-      <motion.div
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        whileHover={{ y: -8 }}
-        className="relative h-[420px] rounded-2xl overflow-hidden group cursor-pointer"
-      >
+      <Link to={`/web-projects/${projectSlug}`}>
+        <motion.div
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          whileHover={{ y: -8 }}
+          className="relative h-[420px] rounded-2xl overflow-hidden group cursor-pointer"
+        >
         <div className="absolute inset-0">
           <img
             src={project.image}
@@ -33,7 +47,7 @@ const ProjectCard = ({ project, index }) => {
               animate={{ rotate: isHovered ? 360 : 0 }}
               transition={{ duration: 0.5 }}
             >
-              <IconComponent className="w-6 h-6 text-white" />
+              {IconComponent && <IconComponent className="w-6 h-6 text-white" />}
             </motion.div>
             <span className="px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-white text-xs">
               {project.category}
@@ -56,7 +70,7 @@ const ProjectCard = ({ project, index }) => {
             </p>
 
             <div className="flex flex-wrap gap-2 mb-4">
-              {project.technologies.slice(0, 3).map((tech, i) => (
+              {technologies.slice(0, 3).map((tech, i) => (
                 <span
                   key={i}
                   className="px-2 py-1 rounded-md bg-white/10 text-white text-xs"
@@ -67,7 +81,7 @@ const ProjectCard = ({ project, index }) => {
             </div>
 
             <div className="grid grid-cols-3 gap-2 mb-4">
-              {Object.entries(project.results).slice(0, 3).map(([key, value], i) => (
+              {Object.entries(results).slice(0, 3).map(([key, value], i) => (
                 <div key={i} className="text-center p-2 rounded-lg bg-white/5">
                   <div className="text-primary-400 font-bold text-sm">{value}</div>
                 </div>
@@ -83,30 +97,60 @@ const ProjectCard = ({ project, index }) => {
                 <ArrowLeft className="w-4 h-4" />
               </motion.div>
               {project.link && (
-                <a
-                  href={project.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    window.open(project.link, '_blank', 'noopener,noreferrer');
+                  }}
                   className="p-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors"
-                  onClick={(e) => e.stopPropagation()}
                 >
                   <ExternalLink className="w-4 h-4" />
-                </a>
+                </button>
               )}
             </div>
           </div>
         </div>
-      </motion.div>
+        </motion.div>
+      </Link>
     </ScrollReveal>
   );
 };
 
 const WebProjects = () => {
   const [activeType, setActiveType] = useState('all');
+  const [projects, setProjects] = useState(defaultProjects);
+  const [projectTypes, setProjectTypes] = useState(defaultTypes);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [projectsRes, typesRes] = await Promise.all([
+          api.getWebProjects(),
+          api.getWebProjectTypes()
+        ]);
+        
+        if (projectsRes.success && projectsRes.data?.length > 0) {
+          setProjects(projectsRes.data);
+        }
+        if (typesRes.success && typesRes.data) {
+          setProjectTypes(typesRes.data.map(t => ({
+            ...t,
+            icon: iconMap[t.icon] || Palette
+          })));
+        }
+      } catch (error) {
+        console.error('Error fetching web projects:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   const filteredProjects = activeType === 'all'
-    ? webProjects
-    : webProjects.filter(p => p.type === activeType);
+    ? projects
+    : projects.filter(p => p.type === activeType);
 
   return (
     <section className="section-padding relative overflow-hidden">

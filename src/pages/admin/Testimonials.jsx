@@ -14,7 +14,12 @@ const Testimonials = () => {
     industry: '', results: '', is_featured: false, is_active: true, order: 0
   });
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => { 
+    fetchData(); 
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
 
   const fetchData = async () => {
     try {
@@ -64,9 +69,14 @@ const Testimonials = () => {
       });
     }
     setShowModal(true);
+    document.body.style.overflow = 'hidden';
   };
 
-  const closeModal = () => { setShowModal(false); setEditingItem(null); };
+  const closeModal = () => { 
+    setShowModal(false); 
+    setEditingItem(null); 
+    document.body.style.overflow = 'unset';
+  };
 
   return (
     <div className="space-y-6">
@@ -119,7 +129,7 @@ const Testimonials = () => {
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark-950/80 backdrop-blur-sm">
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-lg bg-dark-900 border border-white/10 rounded-2xl p-6">
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-lg max-h-[90vh] bg-dark-900 border border-white/10 rounded-2xl p-6 overflow-y-auto">
             <h2 className="text-xl font-bold text-white mb-6">{editingItem ? 'ویرایش نظر' : 'افزودن نظر جدید'}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">

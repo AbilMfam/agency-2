@@ -20,3 +20,4 @@ export { default as Partners } from './Partners';
 export { default as Industries } from './Industries';
 export { default as Industry } from './Industry';
 export { default as TehranAgency } from './TehranAgency';
+export { default as WebProjectDetail } from './WebProjectDetail';

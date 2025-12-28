@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class,
             ContentSeeder::class,
             ReelsSeeder::class,
+            WebProjectSeeder::class,
         ]);
     }
 }

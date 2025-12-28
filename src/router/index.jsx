@@ -24,6 +24,7 @@ import {
   Industries,
   Industry,
   TehranAgency,
+  WebProjectDetail,
 } from '../pages';
 import {
   Login as AdminLogin,
@@ -38,6 +39,8 @@ import {
   Testimonials as AdminTestimonials,
   Reels as AdminReels,
   HomeCards as AdminHomeCards,
+  WebProjects as AdminWebProjects,
+  TeamMembers as AdminTeamMembers,
 } from '../pages/admin';
 
 export const router = createBrowserRouter([
@@ -64,6 +67,7 @@ export const router = createBrowserRouter([
       { path: 'industries/:slug', element: <Industry /> },
       { path: 'tehran', element: <TehranAgency /> },
       { path: 'locations/:locationSlug', element: <Location /> },
+      { path: 'web-projects/:slug', element: <WebProjectDetail /> },
       { path: 'start', element: <Start /> },
       { path: 'thank-you', element: <ThankYou /> },
       { path: '*', element: <NotFound /> },
@@ -79,6 +83,8 @@ export const router = createBrowserRouter([
     children: [
       { path: 'dashboard', element: <AdminDashboard /> },
       { path: 'services', element: <AdminServices /> },
+      { path: 'home-cards', element: <AdminHomeCards /> },
+      { path: 'web-projects', element: <AdminWebProjects /> },
       { path: 'portfolios', element: <AdminPortfolios /> },
       { path: 'contacts', element: <AdminContacts /> },
       { path: 'blog', element: <AdminBlog /> },
@@ -87,7 +93,7 @@ export const router = createBrowserRouter([
       { path: 'packages', element: <AdminPackages /> },
       { path: 'testimonials', element: <AdminTestimonials /> },
       { path: 'reels', element: <AdminReels /> },
-      { path: 'home-cards', element: <AdminHomeCards /> },
+      { path: 'team', element: <AdminTeamMembers /> },
     ],
   },
 ]);

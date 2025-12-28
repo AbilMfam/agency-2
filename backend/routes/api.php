@@ -16,6 +16,8 @@ use App\Http\Controllers\Api\FileController;
 use App\Http\Controllers\Api\SiteSettingController;
 use App\Http\Controllers\Api\ReelController;
 use App\Http\Controllers\Api\HomeCardController;
+use App\Http\Controllers\Api\WebProjectController;
+use App\Http\Controllers\Api\TeamMemberController;
 
 // Public Routes
 Route::prefix('v1')->group(function () {
@@ -55,6 +57,14 @@ Route::prefix('v1')->group(function () {
 
     // Home Cards (Public)
     Route::get('/home-cards', [HomeCardController::class, 'index']);
+
+    // Web Projects (Public)
+    Route::get('/web-projects', [WebProjectController::class, 'index']);
+    Route::get('/web-projects/types', [WebProjectController::class, 'types']);
+    Route::get('/web-projects/{slug}', [WebProjectController::class, 'show']);
+
+    // Team Members (Public)
+    Route::get('/team', [TeamMemberController::class, 'index']);
 });
 
 // Protected Admin Routes
@@ -115,4 +125,11 @@ Route::prefix('v1/admin')->middleware(['auth:sanctum'])->group(function () {
 
     // Home Cards CRUD
     Route::apiResource('home-cards', HomeCardController::class)->except(['index']);
+
+    // Web Projects CRUD
+    Route::apiResource('web-projects', WebProjectController::class)->except(['index', 'show']);
+
+    // Team Members CRUD
+    Route::get('/team', [TeamMemberController::class, 'adminIndex']);
+    Route::apiResource('team-members', TeamMemberController::class)->except(['index']);
 });
