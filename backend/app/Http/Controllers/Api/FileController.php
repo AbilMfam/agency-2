@@ -16,32 +16,59 @@ class FileController extends Controller
             'folder' => 'nullable|string',
         ]);
 
-        $file = $request->file('file');
-        $folder = $request->input('folder', 'uploads');
-        
-        $filename = time() . '_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) 
-                    . '.' . $file->getClientOriginalExtension();
-        
-        $path = $file->storeAs("public/{$folder}", $filename);
-        
-        return response()->json([
-            'success' => true,
-            'path' => Storage::url($path),
-            'filename' => $filename,
-        ]);
+        try {
+            $file = $request->file('file');
+            $folder = $request->input('folder', 'uploads');
+            
+            // Log upload attempt
+            \Log::info('File upload attempt', [
+                'original_name' => $file->getClientOriginalName(),
+                'size' => $file->getSize(),
+                'mime_type' => $file->getMimeType(),
+                'folder' => $folder
+            ]);
+            
+            $filename = time() . '_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) 
+                        . '.' . $file->getClientOriginalExtension();
+            
+            $path = $file->storeAs("public/{$folder}", $filename, 'public');
+            
+            // Log success
+            \Log::info('File uploaded successfully', [
+                'path' => $path,
+                'url' => Storage::disk('public')->url(str_replace('public/', '', $path))
+            ]);
+            
+            return response()->json([
+                'success' => true,
+                'path' => Storage::disk('public')->url(str_replace('public/', '', $path)),
+                'filename' => $filename,
+            ]);
+        } catch (\Exception $e) {
+            // Log error
+            \Log::error('File upload failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'خطا در آپلود فایل: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function list(Request $request)
     {
         $folder = $request->input('folder', 'uploads');
-        $files = Storage::files("public/{$folder}");
+        $files = Storage::disk('public')->files("{$folder}");
         
         $fileList = collect($files)->map(function ($file) {
             return [
                 'name' => basename($file),
-                'path' => Storage::url($file),
-                'size' => Storage::size($file),
-                'modified' => Storage::lastModified($file),
+                'path' => Storage::disk('public')->url($file),
+                'size' => Storage::disk('public')->size($file),
+                'modified' => Storage::disk('public')->lastModified($file),
             ];
         });
 
@@ -55,10 +82,10 @@ class FileController extends Controller
     {
         $request->validate(['path' => 'required|string']);
         
-        $path = str_replace('/storage/', 'public/', $request->input('path'));
+        $path = str_replace('/storage/', '', $request->input('path'));
         
-        if (Storage::exists($path)) {
-            Storage::delete($path);
+        if (Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
             return response()->json(['success' => true]);
         }
 
@@ -82,11 +109,11 @@ class FileController extends Controller
         $filename = time() . '_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) 
                     . '.' . $file->getClientOriginalExtension();
         
-        $path = $file->storeAs("public/{$folder}/{$subfolder}", $filename);
+        $path = $file->storeAs("public/{$folder}/{$subfolder}", $filename, 'public');
         
         return response()->json([
             'success' => true,
-            'path' => Storage::url($path),
+            'path' => Storage::disk('public')->url(str_replace('public/', '', $path)),
             'filename' => $filename,
             'type' => $type,
         ]);

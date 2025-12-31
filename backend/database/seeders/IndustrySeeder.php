@@ -13,11 +13,11 @@ class IndustrySeeder extends Seeder
     public function run(): void
     {
         $industries = [
-            ['title' => 'کافه و رستوران', 'slug' => 'cafe-restaurant', 'icon' => 'Coffee', 'image' => '/storage/industries/cafe.jpg', 'description' => 'تولید محتوا برای کافه‌ها و رستوران‌ها', 'is_active' => true],
+            ['title' => 'کافه و رستوران', 'slug' => 'cafe-restaurant', 'icon' => 'Coffee', 'image' => '/storage/industries/cafe-restaurant.jpg', 'description' => 'تولید محتوا برای کافه‌ها و رستوران‌ها', 'is_active' => true],
             ['title' => 'پزشکی و زیبایی', 'slug' => 'medical-beauty', 'icon' => 'Heart', 'image' => '/storage/industries/medical.jpg', 'description' => 'تولید محتوا برای کلینیک‌های پزشکی و زیبایی', 'is_active' => true],
             ['title' => 'پوشاک و مد', 'slug' => 'fashion', 'icon' => 'Shirt', 'image' => '/storage/industries/fashion.jpg', 'description' => 'تولید محتوا برای برندهای پوشاک و مد', 'is_active' => true],
-            ['title' => 'خودرو', 'slug' => 'automotive', 'icon' => 'Car', 'image' => '/storage/industries/auto.jpg', 'description' => 'تولید محتوا برای نمایشگاه‌های خودرو', 'is_active' => true],
-            ['title' => 'ورزشی', 'slug' => 'sports', 'icon' => 'Dumbbell', 'image' => '/storage/industries/sports.jpg', 'description' => 'تولید محتوا برای باشگاه‌های ورزشی', 'is_active' => true],
+            ['title' => 'خودرو', 'slug' => 'automotive', 'icon' => 'Car', 'image' => '/storage/industries/automotive.jpg', 'description' => 'تولید محتوا برای نمایشگاه‌های خودرو', 'is_active' => true],
+            ['title' => 'ورزشی', 'slug' => 'sports', 'icon' => 'Dumbbell', 'image' => '/storage/industries/fitness.jpg', 'description' => 'تولید محتوا برای باشگاه‌های ورزشی', 'is_active' => true],
             ['title' => 'آموزشی', 'slug' => 'education', 'icon' => 'GraduationCap', 'image' => '/storage/industries/education.jpg', 'description' => 'تولید محتوا برای مراکز آموزشی', 'is_active' => true],
         ];
 

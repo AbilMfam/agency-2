@@ -1,5 +1,5 @@
 # Download all images for the agency website
-$basePath = "D:\New folder (21)\agency\backend\storage\app\public"
+$basePath = ".\storage\app\public"
 
 # Services images
 $services = @{
@@ -45,6 +45,7 @@ $industries = @{
     "industries/medical.jpg" = "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=1200"
     "industries/fashion.jpg" = "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200"
     "industries/fitness.jpg" = "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1200"
+    "industries/education.jpg" = "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200"
 }
 
 # Testimonials avatars

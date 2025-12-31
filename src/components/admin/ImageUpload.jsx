@@ -43,7 +43,7 @@ const ImageUpload = ({ value, onChange, folder = 'uploads', label = 'تصویر'
       const data = await response.json();
 
       if (data.success) {
-        onChange(`${API_URL}${data.path}`);
+        onChange(data.path);
       } else {
         setError(data.message || 'خطا در آپلود فایل');
       }
