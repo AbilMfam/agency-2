@@ -4,44 +4,61 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ChevronDown, ChevronLeft, Phone, MessageCircle } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import Button from '../ui/Button';
-
-const navLinks = [
-  { name: 'خانه', path: '/' },
-  { 
-    name: 'خدمات', 
-    path: '/services',
-    submenu: [
-      { name: 'فیلمبرداری', path: '/services/video-production' },
-      { name: 'تدوین ویدیو', path: '/services/video-editing' },
-      { name: 'موشن گرافیک', path: '/services/motion-graphics' },
-      { name: 'تولید محتوا', path: '/services/content-creation' },
-      { name: 'سوشال مدیا', path: '/services/social-media' },
-      { name: 'دیجیتال مارکتینگ', path: '/services/digital-marketing' },
-    ]
-  },
-  { name: 'نمونه کارها', path: '/portfolio' },
-  { 
-    name: 'صنایع', 
-    path: '/industries',
-    submenu: [
-      { name: 'کافه و رستوران', path: '/industries/cafe-restaurant' },
-      { name: 'خودرو', path: '/industries/automotive' },
-      { name: 'زیبایی و سلامت', path: '/industries/beauty-clinic' },
-      { name: 'مد و پوشاک', path: '/industries/fashion' },
-      { name: 'همه صنایع', path: '/industries' },
-    ]
-  },
-  { name: 'درباره ما', path: '/about' },
-  { name: 'بلاگ', path: '/blog' },
-  { name: 'تهران', path: '/tehran' },
-  { name: 'تماس', path: '/contact' },
-];
+import api from '../../services/api';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSubmenu, setActiveSubmenu] = useState(null);
+  const [services, setServices] = useState([]);
+  const [industries, setIndustries] = useState([]);
   const location = useLocation();
+
+  // Fetch services and industries from API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [servicesRes, industriesRes] = await Promise.all([
+          api.getServices(),
+          api.getIndustries()
+        ]);
+        setServices(servicesRes.data || []);
+        setIndustries(industriesRes.data || []);
+      } catch (error) {
+        console.error('Error fetching nav data:', error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  // Build dynamic nav links
+  const navLinks = [
+    { name: 'خانه', path: '/' },
+    { 
+      name: 'خدمات', 
+      path: '/services',
+      submenu: services.slice(0, 6).map(s => ({
+        name: s.title || s.short_title,
+        path: `/services/${s.slug}`
+      }))
+    },
+    { name: 'نمونه کارها', path: '/portfolio' },
+    { 
+      name: 'صنایع', 
+      path: '/industries',
+      submenu: [
+        ...industries.slice(0, 4).map(i => ({
+          name: i.title || i.short_title,
+          path: `/industries/${i.slug}`
+        })),
+        { name: 'همه صنایع', path: '/industries' }
+      ]
+    },
+    { name: 'درباره ما', path: '/about' },
+    { name: 'بلاگ', path: '/blog' },
+    { name: 'تهران', path: '/tehran' },
+    { name: 'تماس', path: '/contact' },
+  ];
 
   useEffect(() => {
     const handleScroll = () => {

@@ -76,7 +76,7 @@ const Industry = () => {
       <section className="relative min-h-[70vh] flex items-center overflow-hidden">
         <div className="absolute inset-0">
           <img
-            src={industry.hero_image || industry.image?.startsWith('http') ? industry.image : `http://127.0.0.1:8000${industry.image}`}
+            src={industry.hero_image || industry.image}
             alt={industry.title}
             className="w-full h-full object-cover"
           />
@@ -220,7 +220,7 @@ const Industry = () => {
             >
               <div className="absolute inset-0">
                 <img
-                  src={industry.hero_image || industry.image?.startsWith('http') ? industry.image : `http://127.0.0.1:8000${industry.image}`}
+                  src={industry.hero_image || industry.image}
                   alt="نمونه کار"
                   className="w-full h-full object-cover"
                 />
@@ -335,7 +335,7 @@ const Industry = () => {
                         }
                       </div>
                       <p className="text-white text-sm font-medium group-hover:text-primary-400 transition-colors">
-                        {ind.shortTitle}
+                        {ind.short_title || ind.title}
                       </p>
                     </motion.div>
                   </Link>

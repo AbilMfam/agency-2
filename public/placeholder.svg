@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#1a1a2e"/>
+  <rect x="150" y="100" width="100" height="80" rx="8" fill="#2d2d44"/>
+  <circle cx="175" cy="125" r="12" fill="#4a4a6a"/>
+  <path d="M155 165 L185 140 L215 160 L245 130 L245 175 L155 175 Z" fill="#4a4a6a"/>
+  <text x="200" y="210" text-anchor="middle" fill="#6b6b8a" font-family="Arial" font-size="14">تصویر موجود نیست</text>
+</svg>

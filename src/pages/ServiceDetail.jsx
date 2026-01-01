@@ -69,15 +69,17 @@ const ServiceDetail = () => {
   const { slug } = useParams();
   const [service, setService] = useState(null);
   const [services, setServices] = useState(defaultServices);
+  const [packages, setPackages] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [serviceResponse, servicesResponse] = await Promise.all([
+        const [serviceResponse, servicesResponse, packagesResponse] = await Promise.all([
           api.getService(slug),
-          api.getServices()
+          api.getServices(),
+          api.getPackages()
         ]);
         
         if (serviceResponse.success && serviceResponse.data) {
@@ -86,6 +88,15 @@ const ServiceDetail = () => {
         
         if (servicesResponse.success && servicesResponse.data) {
           setServices(servicesResponse.data);
+        }
+
+        if (packagesResponse.success && packagesResponse.data?.length > 0) {
+          setPackages(packagesResponse.data.map(pkg => ({
+            ...pkg,
+            features: pkg.features || [],
+            notIncluded: pkg.not_included || [],
+            popular: pkg.is_popular,
+          })));
         }
       } catch (error) {
         // Fallback to static data
@@ -124,8 +135,8 @@ const ServiceDetail = () => {
   const relatedServices = services.filter(s => s.id !== service.id).slice(0, 3);
   const gallery = service?.gallery || serviceGallery[slug] || defaultGallery;
   
-  // Default packages if not provided by API
-  const packages = service.packages || [
+  // Use packages from state (fetched from API) or fallback to defaults
+  const displayPackages = packages.length > 0 ? packages : [
     {
       id: 1,
       name: 'استاندارد',
@@ -186,7 +197,7 @@ const ServiceDetail = () => {
               {service.title}
             </h1>
 
-            <p className="text-xl text-dark-300 mb-8 max-w-2xl leading-relaxed">
+            <p className="text-lg md:text-xl text-dark-300 mb-8 max-w-2xl leading-relaxed">
               {service.description}
             </p>
 
@@ -209,10 +220,16 @@ const ServiceDetail = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             <div className="lg:col-span-2">
               <ScrollReveal>
-                <h2 className="text-3xl font-bold text-white mb-6">درباره این خدمت</h2>
-                <p className="text-dark-300 mb-8 leading-relaxed text-lg">
-                  {service.fullDescription}
-                </p>
+                <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">درباره این خدمت</h2>
+                <div className="text-dark-300 mb-8 leading-relaxed text-base md:text-lg space-y-4">
+                  {service.full_description ? (
+                    <div dangerouslySetInnerHTML={{ __html: service.full_description }} />
+                  ) : service.fullDescription ? (
+                    <p>{service.fullDescription}</p>
+                  ) : (
+                    <p>{service.description}</p>
+                  )}
+                </div>
 
                 {/* Persuasive Description Section - Ready for content */}
                 {service.persuasiveContent && (
@@ -386,7 +403,7 @@ const ServiceDetail = () => {
           </ScrollReveal>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {packages.map((pkg, index) => (
+            {displayPackages.map((pkg, index) => (
               <ScrollReveal key={pkg.id} delay={index * 0.1}>
                 <motion.div
                   whileHover={{ y: -8 }}

@@ -26,6 +26,14 @@ class BlogPost extends Model
         'scheduled_at' => 'datetime',
     ];
 
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName()
+    {
+        return 'id';
+    }
+
     protected $appends = ['reading_time_formatted'];
 
     public function user()

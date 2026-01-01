@@ -146,7 +146,7 @@ const TeamMembers = () => {
             <div className="aspect-square relative">
               {member.image ? (
                 <img
-                  src={member.image.startsWith('http') ? member.image : `http://127.0.0.1:8000${member.image}`}
+                  src={member.image}
                   alt={member.name}
                   className="w-full h-full object-cover"
                 />

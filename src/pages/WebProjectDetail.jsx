@@ -76,8 +76,8 @@ const WebProjectDetail = () => {
   const features = project.features || [];
   const results = project.results || {};
   const gallery = project.gallery || [];
-  const projectImage = project.image?.startsWith('http') ? project.image : `http://127.0.0.1:8000${project.image}`;
-  const mockupImage = project.mockup_image?.startsWith('http') ? project.mockup_image : project.mockup_image ? `http://127.0.0.1:8000${project.mockup_image}` : null;
+  const projectImage = project.image;
+  const mockupImage = project.mockup_image || null;
 
   return (
     <div className="pt-24 pb-20">

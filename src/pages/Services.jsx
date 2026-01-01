@@ -2,30 +2,46 @@ import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Video, Film, Camera, FileText, Share2, TrendingUp, Palette, Globe, Search } from 'lucide-react';
+import { 
+  ArrowLeft, Video, Film, Camera, FileText, Share2, TrendingUp, 
+  Palette, Globe, Search, Megaphone, PenTool, Smartphone, 
+  BarChart3, Target, Zap, Sparkles, Instagram, Youtube,
+  Monitor, Code, Layout, Image, MessageSquare, Users
+} from 'lucide-react';
 import { SectionTitle, Card } from '../components/ui';
 import api from '../services/api';
 
 const iconMap = {
-  Video,
-  Film,
-  Camera,
-  FileText,
-  Share2,
-  TrendingUp,
-  Palette,
-  Globe,
-  Search,
+  Video, Film, Camera, FileText, Share2, TrendingUp, Palette, Globe, Search,
+  Megaphone, PenTool, Smartphone, BarChart3, Target, Zap, Sparkles,
+  Instagram, Youtube, Monitor, Code, Layout, Image, MessageSquare, Users,
   'video-production': Video,
   'video-editing': Film,
-  'motion-graphics': Camera,
-  'content-creation': FileText,
-  'social-media': Share2,
-  'digital-marketing': TrendingUp,
+  'motion-graphics': Sparkles,
+  'content-creation': PenTool,
+  'social-media': Instagram,
+  'digital-marketing': Megaphone,
   'branding': Palette,
-  'graphic-design': Palette,
-  'web-design': Globe,
+  'graphic-design': Layout,
+  'web-design': Monitor,
   'seo': Search,
+  'photography': Camera,
+  'advertising': Target,
+  'analytics': BarChart3,
+  'consulting': Users,
+};
+
+const colorMap = {
+  'video-production': 'from-red-500 to-rose-600',
+  'video-editing': 'from-purple-500 to-violet-600',
+  'motion-graphics': 'from-cyan-500 to-blue-600',
+  'content-creation': 'from-amber-500 to-orange-600',
+  'social-media': 'from-pink-500 to-rose-500',
+  'digital-marketing': 'from-green-500 to-emerald-600',
+  'branding': 'from-indigo-500 to-purple-600',
+  'graphic-design': 'from-teal-500 to-cyan-600',
+  'web-design': 'from-blue-500 to-indigo-600',
+  'seo': 'from-lime-500 to-green-600',
 };
 
 const Services = () => {
@@ -80,10 +96,10 @@ const Services = () => {
               >
                 <Link to={`/services/${service.slug}`}>
                   <Card className="p-8 h-full group cursor-pointer">
-                    <div className={`w-16 h-16 rounded-2xl bg-gradient-to-r ${service.color || 'from-primary-500 to-secondary-500'} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                    <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-r ${service.color || colorMap[service.slug] || 'from-primary-500 to-secondary-500'} flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300`}>
                       {(() => {
-                        const IconComponent = iconMap[service.icon] || iconMap[service.id] || iconMap[service.slug] || Video;
-                        return <IconComponent className="w-8 h-8 text-white" />;
+                        const IconComponent = iconMap[service.icon] || iconMap[service.slug] || Video;
+                        return <IconComponent className="w-6 h-6 sm:w-8 sm:h-8 text-white" />;
                       })()}
                     </div>
                     

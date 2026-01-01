@@ -120,24 +120,40 @@ class WebProjectController extends Controller
             'category' => 'sometimes|string|max:255',
             'icon' => 'nullable|string',
             'color' => 'nullable|string',
-            'image' => 'sometimes|file|mimes:jpg,jpeg,png,webp|max:2048',
-            'mockup_image' => 'sometimes|file|mimes:jpg,jpeg,png,webp|max:2048',
-            'description' => 'sometimes|string',
-            'client' => 'sometimes|string|max:255',
-            'industry' => 'sometimes|string|max:255',
-            'year' => 'sometimes|string|max:10',
-            'technologies' => 'sometimes|array',
-            'features' => 'sometimes|array',
-            'results' => 'sometimes|array',
-            'link' => 'sometimes|string|url',
-            'testimonial' => 'sometimes|string',
-            'challenge' => 'sometimes|string',
-            'solution' => 'sometimes|string',
-            'gallery' => 'sometimes|array',
-            'order' => 'sometimes|integer',
-            'is_featured' => 'boolean',
-            'is_active' => 'boolean',
+            'image' => 'nullable',
+            'mockup_image' => 'nullable',
+            'description' => 'nullable|string',
+            'client' => 'nullable|string|max:255',
+            'industry' => 'nullable|string|max:255',
+            'year' => 'nullable|string|max:10',
+            'technologies' => 'nullable',
+            'features' => 'nullable',
+            'results' => 'nullable',
+            'link' => 'nullable|string',
+            'testimonial' => 'nullable|string',
+            'challenge' => 'nullable|string',
+            'solution' => 'nullable|string',
+            'gallery' => 'nullable',
+            'order' => 'nullable|integer',
+            'is_featured' => 'nullable',
+            'is_active' => 'nullable',
         ]);
+        
+        // Parse JSON strings for array fields
+        foreach (['technologies', 'features', 'results', 'gallery'] as $field) {
+            if (isset($validated[$field]) && is_string($validated[$field])) {
+                $decoded = json_decode($validated[$field], true);
+                $validated[$field] = $decoded !== null ? $decoded : $validated[$field];
+            }
+        }
+        
+        // Convert boolean strings
+        if (isset($validated['is_featured'])) {
+            $validated['is_featured'] = filter_var($validated['is_featured'], FILTER_VALIDATE_BOOLEAN);
+        }
+        if (isset($validated['is_active'])) {
+            $validated['is_active'] = filter_var($validated['is_active'], FILTER_VALIDATE_BOOLEAN);
+        }
 
         // Handle file uploads
         if ($request->hasFile('image')) {

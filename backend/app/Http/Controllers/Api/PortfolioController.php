@@ -32,23 +32,40 @@ class PortfolioController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'category' => 'required|string',
-            'type' => 'nullable|string',
-            'thumbnail' => 'required|file|mimes:jpg,jpeg,png,webp|max:2048',
-            'video_url' => 'nullable|string',
-            'gallery' => 'nullable|array',
-            'client_name' => 'nullable|string',
-            'industry' => 'nullable|string',
-            'views' => 'nullable|string',
-            'growth' => 'nullable|string',
-            'tags' => 'nullable|array',
-            'is_featured' => 'boolean',
-            'is_active' => 'boolean',
-            'order' => 'nullable|integer',
-        ]);
+        try {
+            // First, parse JSON strings for array fields
+            $requestData = $request->all();
+            foreach (['tags', 'services', 'gallery'] as $field) {
+                if (isset($requestData[$field]) && is_string($requestData[$field])) {
+                    $decoded = json_decode($requestData[$field], true);
+                    $requestData[$field] = $decoded !== null ? $decoded : $requestData[$field];
+                }
+            }
+            
+            $validated = validator()->make($requestData, [
+                'title' => 'required|string|max:255',
+                'description' => 'required|string',
+                'category' => 'required|string',
+                'type' => 'nullable|string',
+                'thumbnail' => 'required|file|mimes:jpg,jpeg,png,webp|max:2048',
+                'video_url' => 'nullable|string',
+                'gallery' => 'nullable|array',
+                'client_name' => 'nullable|string',
+                'industry' => 'nullable|string',
+                'views' => 'nullable|string',
+                'growth' => 'nullable|string',
+                'tags' => 'nullable|array',
+                'is_featured' => 'boolean',
+                'is_active' => 'boolean',
+                'order' => 'nullable|integer',
+            ])->validate();
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        }
 
         $validated['slug'] = Str::slug($validated['title']);
         
@@ -115,26 +132,63 @@ class PortfolioController extends Controller
 
     public function update(Request $request, Portfolio $portfolio)
     {
-        $validated = $request->validate([
-            'title' => 'sometimes|string|max:255',
-            'description' => 'sometimes|string',
-            'category' => 'sometimes|string',
-            'type' => 'nullable|string',
-            'thumbnail' => 'sometimes|file|mimes:jpg,jpeg,png,webp|max:2048',
-            'video_url' => 'nullable|string',
-            'gallery' => 'nullable|array',
-            'client_name' => 'nullable|string',
-            'industry' => 'nullable|string',
-            'views' => 'nullable|string',
-            'growth' => 'nullable|string',
-            'tags' => 'nullable|array',
-            'is_featured' => 'boolean',
-            'is_active' => 'boolean',
-            'order' => 'nullable|integer',
-        ]);
+        try {
+            // First, parse JSON strings for array fields
+            $requestData = $request->all();
+            foreach (['tags', 'services', 'gallery'] as $field) {
+                if (isset($requestData[$field]) && is_string($requestData[$field])) {
+                    $decoded = json_decode($requestData[$field], true);
+                    $requestData[$field] = $decoded !== null ? $decoded : $requestData[$field];
+                }
+            }
+            
+            $validated = validator()->make($requestData, [
+                'title' => 'sometimes|string|max:255',
+                'description' => 'sometimes|string',
+                'category' => 'sometimes|string',
+                'type' => 'nullable|string',
+                'thumbnail' => 'nullable|string',
+                'video_url' => 'nullable|string',
+                'gallery' => 'nullable|array',
+                'client_name' => 'nullable|string',
+                'industry' => 'nullable|string',
+                'views' => 'nullable|string',
+                'growth' => 'nullable|string',
+                'tags' => 'nullable|array',
+                'is_featured' => 'sometimes|boolean',
+                'is_active' => 'sometimes|boolean',
+                'order' => 'nullable|integer',
+            ])->validate();
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Portfolio update validation failed:', [
+                'errors' => $e->errors(),
+                'request_data' => $request->all()
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        }
 
         if (isset($validated['title'])) {
             $validated['slug'] = Str::slug($validated['title']);
+        }
+        
+        // Parse JSON strings for array fields
+        foreach (['tags', 'services', 'gallery'] as $field) {
+            if (isset($validated[$field]) && is_string($validated[$field])) {
+                $decoded = json_decode($validated[$field], true);
+                $validated[$field] = $decoded !== null ? $decoded : $validated[$field];
+            }
+        }
+        
+        // Convert boolean strings
+        if (isset($validated['is_featured'])) {
+            $validated['is_featured'] = filter_var($validated['is_featured'], FILTER_VALIDATE_BOOLEAN);
+        }
+        if (isset($validated['is_active'])) {
+            $validated['is_active'] = filter_var($validated['is_active'], FILTER_VALIDATE_BOOLEAN);
         }
         
         // Handle thumbnail upload

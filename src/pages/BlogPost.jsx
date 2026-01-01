@@ -254,15 +254,15 @@ const BlogPost = () => {
                   />
 
                   {/* Render Content Blocks */}
-                  {post.content_blocks && typeof post.content_blocks === 'string' && (
+                  {post.contentBlocks && typeof post.contentBlocks === 'string' && (
                     <div 
                       className="content-blocks"
-                      dangerouslySetInnerHTML={{ __html: post.content_blocks }}
+                      dangerouslySetInnerHTML={{ __html: post.contentBlocks }}
                     />
                   )}
                   
                   {/* Legacy Content Blocks (for backward compatibility) */}
-                  {(Array.isArray(post.content_blocks) ? post.content_blocks : []).map((block, index) => {
+                  {(Array.isArray(post.contentBlocks) ? post.contentBlocks : []).map((block, index) => {
                     switch (block.type) {
                       case 'callout':
                         return (

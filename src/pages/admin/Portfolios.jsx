@@ -40,12 +40,33 @@ const Portfolios = () => {
     setIsSubmitting(true);
     setErrors({});
     
+    // Map form fields to API fields
+    const apiData = {
+      title: formData.title,
+      description: formData.description,
+      category: formData.category,
+      type: formData.type,
+      thumbnail: formData.thumbnail,
+      video_url: formData.video_url,
+      client_name: formData.client || '',
+      industry: formData.industry,
+      views: formData.views,
+      growth: formData.growth,
+      services: formData.services,
+      tags: formData.tags,
+      gallery: formData.gallery,
+      is_featured: formData.is_featured,
+      is_active: formData.is_active,
+      order: formData.order,
+    };
+    
+    console.log('Submitting portfolio data:', apiData);
     try {
       if (editingItem) {
-        await api.updatePortfolio(editingItem.id, formData);
+        await api.updatePortfolio(editingItem.id, apiData);
         setToast({ message: 'نمونه کار با موفقیت بروزرسانی شد', type: 'success' });
       } else {
-        await api.createPortfolio(formData);
+        await api.createPortfolio(apiData);
         setToast({ message: 'نمونه کار با موفقیت ایجاد شد', type: 'success' });
       }
       fetchData();
@@ -78,7 +99,15 @@ const Portfolios = () => {
   const openModal = (item = null) => {
     if (item) {
       setEditingItem(item);
-      setFormData(item);
+      // Map API fields to form fields
+      setFormData({
+        ...item,
+        client: item.client_name || '',
+        // Ensure arrays are properly set
+        tags: item.tags || [],
+        services: item.services || [],
+        gallery: item.gallery || [],
+      });
     } else {
       setEditingItem(null);
       setFormData({
@@ -134,7 +163,7 @@ const Portfolios = () => {
                   className="w-full h-48 object-cover"
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = 'http://127.0.0.1:8000/storage/placeholder.jpg';
+                    e.target.src = '/placeholder.svg';
                   }}
                 />
                 <div className="absolute top-3 right-3 flex gap-2">

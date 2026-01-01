@@ -1,8 +1,6 @@
 import { useState, useRef } from 'react';
 import { Upload, X, Image as ImageIcon } from 'lucide-react';
 
-const API_URL = 'http://127.0.0.1:8000';
-
 const ImageUpload = ({ value, onChange, folder = 'uploads', label = 'تصویر' }) => {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
@@ -31,7 +29,7 @@ const ImageUpload = ({ value, onChange, folder = 'uploads', label = 'تصویر'
       formData.append('folder', folder);
 
       const token = localStorage.getItem('auth_token');
-      const response = await fetch(`${API_URL}/api/v1/admin/files/upload`, {
+      const response = await fetch(`/api/v1/admin/files/upload`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -82,7 +80,7 @@ const ImageUpload = ({ value, onChange, folder = 'uploads', label = 'تصویر'
             onError={(e) => {
               e.target.onerror = null;
               console.log('Image load error:', value);
-              e.target.src = `${API_URL}/placeholder.svg`;
+              e.target.src = `/placeholder.svg`;
             }}
             onLoad={() => {
               console.log('Image loaded successfully:', value);

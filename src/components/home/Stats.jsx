@@ -1,18 +1,56 @@
 import { motion, useInView } from 'framer-motion';
-import { useRef } from 'react';
-import { Rocket, Eye, Star, Calendar } from 'lucide-react';
+import { useRef, useState, useEffect } from 'react';
+import { Rocket, Eye, Star, Calendar, Award, Users, TrendingUp, Target } from 'lucide-react';
 import { AnimatedCounter, ScrollReveal } from '../ui';
+import api from '../../services/api';
 
-const stats = [
-  { value: 150, suffix: '+', label: 'پروژه موفق', icon: Rocket, color: 'from-orange-500 to-red-500' },
-  { value: 50, suffix: 'M+', label: 'ویو کل', icon: Eye, color: 'from-blue-500 to-cyan-500' },
-  { value: 98, suffix: '%', label: 'رضایت مشتری', icon: Star, color: 'from-yellow-500 to-amber-500' },
-  { value: 5, suffix: '+', label: 'سال تجربه', icon: Calendar, color: 'from-purple-500 to-pink-500' },
+const iconMap = {
+  Rocket, Eye, Star, Calendar, Award, Users, TrendingUp, Target
+};
+
+const defaultStats = [
+  { value: 150, suffix: '+', title: 'پروژه موفق', icon: 'Rocket', color: 'from-orange-500 to-red-500' },
+  { value: 50, suffix: 'M+', title: 'ویو کل', icon: 'Eye', color: 'from-blue-500 to-cyan-500' },
+  { value: 98, suffix: '%', title: 'رضایت مشتری', icon: 'Star', color: 'from-yellow-500 to-amber-500' },
+  { value: 5, suffix: '+', title: 'سال تجربه', icon: 'Calendar', color: 'from-purple-500 to-pink-500' },
 ];
 
 const Stats = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
+  const [stats, setStats] = useState(defaultStats);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await api.getHomeCards();
+        if (response.success && response.data) {
+          const statsData = response.data.filter(card => card.section === 'stats' && card.is_active);
+          if (statsData.length > 0) {
+            // Use API data but ensure we have at least 4 items
+            const apiStats = statsData.map(s => ({
+              value: parseInt(s.value) || 0,
+              suffix: s.suffix || '',
+              title: s.title,
+              icon: s.icon,
+              color: s.color
+            }));
+            
+            // If API has less than 4 items, add default items
+            if (apiStats.length < 4) {
+              const remainingStats = defaultStats.slice(apiStats.length);
+              setStats([...apiStats, ...remainingStats]);
+            } else {
+              setStats(apiStats);
+            }
+          }
+        }
+      } catch (error) {
+        // Fallback to default stats
+      }
+    };
+    fetchStats();
+  }, []);
 
   return (
     <section className="py-20 relative overflow-hidden">
@@ -41,12 +79,15 @@ const Stats = () => {
                   animate={isInView ? { scale: [1, 1.2, 1] } : {}}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                 >
-                  <stat.icon className="w-7 h-7 text-white" />
+                  {(() => {
+                    const IconComponent = iconMap[stat.icon] || Rocket;
+                    return <IconComponent className="w-7 h-7 text-white" />;
+                  })()}
                 </motion.div>
                 <div className="text-3xl md:text-4xl font-black text-white mb-2">
                   {isInView && <AnimatedCounter end={stat.value} suffix={stat.suffix} />}
                 </div>
-                <div className="text-dark-400 text-sm">{stat.label}</div>
+                <div className="text-dark-400 text-sm">{stat.title}</div>
               </motion.div>
             </ScrollReveal>
           ))}

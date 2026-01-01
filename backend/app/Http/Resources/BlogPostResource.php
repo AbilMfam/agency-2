@@ -20,7 +20,7 @@ class BlogPostResource extends JsonResource
             'slug' => $this->slug,
             'excerpt' => $this->excerpt,
             'content' => $this->content,
-            'content_blocks' => $this->content_blocks ? (is_string($this->content_blocks) ? json_decode($this->content_blocks, true) : $this->content_blocks) : [],
+            'content_blocks' => $this->content_blocks ? (is_array($this->content_blocks) ? $this->generateHtmlFromBlocks($this->content_blocks) : $this->content_blocks) : '',
             'thumbnail' => $this->thumbnail ? url($this->thumbnail) : null,
             'featured_image_alt' => $this->featured_image_alt,
             'featured_image_caption' => $this->featured_image_caption,
@@ -47,6 +47,46 @@ class BlogPostResource extends JsonResource
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
         ];
+    }
+
+    /**
+     * Generate HTML from content blocks array
+     */
+    protected function generateHtmlFromBlocks(array $blocks): string
+    {
+        $html = '';
+        
+        foreach ($blocks as $block) {
+            if (isset($block['html']) && $block['html']) {
+                $html .= $block['html'] . "\n";
+            } elseif (isset($block['type'], $block['title'], $block['content'])) {
+                // Generate HTML from block data
+                $type = $block['type'] ?? 'emerald';
+                $title = $block['title'] ?? '';
+                $content = $block['content'] ?? '';
+                
+                $html .= '<div class="bg-' . $type . '-500/10 border-' . $type . '-500/30 border-r-4 rounded-xl p-5 my-6">';
+                $html .= '<div class="flex items-start gap-3">';
+                $html .= '<div class="flex-shrink-0 mt-0.5">';
+                $html .= '<div class="w-5 h-5 bg-' . $type . '-500 rounded-full flex items-center justify-center">';
+                $html .= '<div class="w-2 h-2 bg-white rounded-full"></div>';
+                $html .= '</div>';
+                $html .= '</div>';
+                $html .= '<div class="flex-1">';
+                if ($title) {
+                    $html .= '<h4 class="font-bold text-' . $type . '-400 mb-2">' . $title . '</h4>';
+                }
+                if ($content) {
+                    $html .= '<div class="text-dark-300 leading-relaxed">' . $content . '</div>';
+                }
+                $html .= '</div>';
+                $html .= '</div>';
+                $html .= '</div>';
+                $html .= "\n";
+            }
+        }
+        
+        return $html;
     }
 
     /**

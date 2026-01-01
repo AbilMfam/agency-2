@@ -141,19 +141,23 @@ Route::prefix('v1/admin')->middleware(['auth:sanctum'])->group(function () {
     Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
 
     // Services CRUD
+    Route::get('/services', [ServiceController::class, 'index']);
     Route::apiResource('services', ServiceController::class)->except(['index', 'show']);
 
     // Portfolios CRUD
+    Route::get('/portfolios', [PortfolioController::class, 'index']);
     Route::apiResource('portfolios', PortfolioController::class)->except(['index', 'show']);
 
     // Industries CRUD
+    Route::get('/industries', [IndustryController::class, 'index']);
     Route::apiResource('industries', IndustryController::class)->except(['index', 'show']);
 
     // Blog CRUD
     Route::get('/blog', [BlogController::class, 'adminIndex']);
+    Route::get('/blog/{post}', [BlogController::class, 'show']);
     Route::post('/blog', [BlogController::class, 'store']);
-    Route::put('/blog/{blogPost}', [BlogController::class, 'update']);
-    Route::delete('/blog/{blogPost}', [BlogController::class, 'destroy']);
+    Route::put('/blog/{post}', [BlogController::class, 'update']);
+    Route::delete('/blog/{post}', [BlogController::class, 'destroy']);
     
     // Blog Categories
     Route::post('/blog/categories', [BlogController::class, 'storeCategory']);

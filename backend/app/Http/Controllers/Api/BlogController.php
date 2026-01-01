@@ -37,12 +37,17 @@ class BlogController extends Controller
         return new BlogPostCollection($posts);
     }
     
-    public function show(string $slug): BlogPostResource
+    public function show($param): BlogPostResource
     {
-        $post = BlogPost::where('slug', $slug)
-                       ->where('is_published', true)
-                       ->with(['categoryRelation', 'tagsRelation'])
-                       ->first();
+        // Handle both slug and id
+        if (is_numeric($param)) {
+            $post = BlogPost::findOrFail($param);
+        } else {
+            $post = BlogPost::where('slug', $param)
+                           ->where('is_published', true)
+                           ->with(['categoryRelation', 'tagsRelation'])
+                           ->firstOrFail();
+        }
         
         if (!$post) {
             return response()->json([
@@ -71,7 +76,7 @@ class BlogController extends Controller
                 'excerpt' => $request->excerpt,
                 'content' => $request->content,
                 'category' => $request->category,
-                'author' => $request->author,
+                'author' => $request->author ?? 'ادمین',
                 'author_avatar' => $request->author_avatar,
                 'thumbnail' => $request->thumbnail, // Will be updated if file uploaded
                 'read_time' => $request->read_time,
@@ -159,42 +164,135 @@ class BlogController extends Controller
     
     public function update(BlogPostRequest $request, BlogPost $post): JsonResponse
     {
-        // 1. Find the post (already done via route model binding)
-        // $post = BlogPost::findOrFail($id);
+        DB::beginTransaction();
+        try {
+            \Log::info('=== Starting blog post update ===');
+            \Log::info('Post ID: ' . $post->id);
+            \Log::info('Request data: ' . json_encode($request->all()));
+            \Log::info('content_blocks: ' . json_encode($request->input('content_blocks')));
+            \Log::info('content_blocks type: ' . gettype($request->input('content_blocks')));
 
-        // 2. Update basic fields
-        $updateData = $request->except(['tags', 'thumbnail']);
-        
-        // Handle content-related fields
-        if (isset($updateData['content'])) {
-            $wordCount = $this->blogService->calculateWordCount($updateData['content']);
-            $updateData['word_count'] = $wordCount;
-            $updateData['read_time'] = $this->blogService->calculateReadTime($wordCount);
-        }
-        
-        $post->update($updateData);
+            // 1. Update basic fields
+            $updateData = $request->except(['tags', 'thumbnail', '_method']);
+            
+            // Handle JSON arrays (for JSON requests)
+            foreach (['tags'] as $field) {
+                if (isset($updateData[$field]) && is_string($updateData[$field])) {
+                    $decoded = json_decode($updateData[$field], true);
+                    if ($decoded !== null) {
+                        $updateData[$field] = $decoded;
+                    }
+                }
+            }
+            
+            // Handle HTML string for content_blocks - store as-is to preserve encoding
+            if (isset($updateData['content_blocks']) && is_string($updateData['content_blocks'])) {
+                \Log::info('Processing content_blocks HTML string');
+                $html = $updateData['content_blocks'];
+                
+                // Parse using regex to preserve UTF-8 encoding
+                $blocks = [];
+                
+                // Match individual callout divs with their full HTML
+                if (preg_match_all('/<div[^>]*class="[^"]*bg-(\w+)-500\/10[^"]*"[^>]*>.*?<\/div>\s*<\/div>\s*<\/div>/s', $html, $divMatches, PREG_SET_ORDER)) {
+                    foreach ($divMatches as $divMatch) {
+                        $divHtml = $divMatch[0];
+                        
+                        // Extract type, title, and content from this specific div
+                        if (preg_match('/bg-(\w+)-500\/10/', $divHtml, $typeMatch) &&
+                            preg_match('/<h4[^>]*>([^<]*)<\/h4>/', $divHtml, $titleMatch) &&
+                            preg_match('/<div[^>]*class="[^"]*text-dark-300[^"]*"[^>]*>([^<]*)<\/div>/', $divHtml, $contentMatch)) {
+                            
+                            $blocks[] = [
+                                'type' => $typeMatch[1],
+                                'title' => trim($titleMatch[1]),
+                                'content' => trim($contentMatch[1]),
+                                'html' => $divHtml
+                            ];
+                        }
+                    }
+                }
+                
+                // If no matches found, store the raw HTML as a single block
+                if (empty($blocks) && !empty(trim($html))) {
+                    $blocks[] = [
+                        'type' => 'emerald',
+                        'title' => '',
+                        'content' => '',
+                        'html' => $html
+                    ];
+                }
+                
+                \Log::info('Final blocks array: ' . json_encode($blocks, JSON_UNESCAPED_UNICODE));
+                $updateData['content_blocks'] = $blocks;
+            }
+            
+            // Handle content-related fields
+            if (isset($updateData['content'])) {
+                $wordCount = $this->blogService->calculateWordCount($updateData['content']);
+                $updateData['word_count'] = $wordCount;
+                $updateData['read_time'] = $this->blogService->calculateReadTime($wordCount);
+            }
+            
+            $post->update($updateData);
+            $post->refresh();
 
-        // 3. Handle Image
-        if ($request->hasFile('thumbnail')) {
-            $path = $request->file('thumbnail')->store('blog', 'public');
-            $post->update(['thumbnail' => $path]);
-        }
+            // 2. Handle Image
+            if ($request->hasFile('thumbnail')) {
+                $path = $request->file('thumbnail')->store('blog', 'public');
+                $post->update(['thumbnail' => $path]);
+                $post->refresh();
+            }
 
-        // 4. Sync Tags
-        if ($request->has('tags')) {
-            // Handle both comma-separated string or array
-            $tags = is_string($request->tags) ? explode(',', $request->tags) : $request->tags;
-            $this->syncTags($post, $tags);
+            // 3. Sync Tags
+            if ($request->has('tags')) {
+                $tags = $request->tags;
+                
+                // Handle JSON string from FormData
+                if (is_string($tags)) {
+                    $decoded = json_decode($tags, true);
+                    if ($decoded !== null) {
+                        $tags = $decoded;
+                    } else {
+                        // Handle comma-separated string
+                        $tags = explode(',', $tags);
+                    }
+                }
+                
+                $tags = array_filter($tags, function($tag) {
+                    return !empty($tag) && is_string($tag);
+                }); // Remove empty values
+                
+                if (!empty($tags)) {
+                    $this->syncTags($post, $tags);
+                } else {
+                    // Clear all tags if empty array
+                    $post->tagsRelation()->detach();
+                }
+            }
+            
+            DB::commit();
+            
+            // Clear cache
+            $this->blogService->clearCache($post->slug);
+            
+            return response()->json([
+                'success' => true,
+                'data' => new BlogPostResource($post->load(['categoryRelation', 'tagsRelation'])),
+                'message' => 'مقاله با موفقیت ویرایش شد',
+            ]);
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Error updating blog post: ' . $e->getMessage());
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'خطا در ویرایش مقاله',
+                'error' => $e->getMessage(),
+            ], 500);
         }
-        
-        // Clear cache
-        $this->blogService->clearCache($post->slug);
-        
-        return response()->json([
-            'success' => true,
-            'data' => new BlogPostResource($post),
-            'message' => 'مقاله با موفقیت ویرایش شد',
-        ]);
     }
     
     /**
@@ -234,13 +332,40 @@ class BlogController extends Controller
         \Log::info('Tag IDs to sync: ' . json_encode($tagIds));
         
         try {
+            // Ensure post has an ID before syncing
+            if (!$post->id) {
+                \Log::error('Post ID is null, cannot sync tags');
+                throw new \Exception('Post ID is null');
+            }
+            
+            \Log::info("About to sync tags for post ID: {$post->id} with tag IDs: " . json_encode($tagIds));
             $post->tagsRelation()->sync($tagIds);
             \Log::info('Tags synced successfully for post ' . $post->id);
         } catch (\Exception $e) {
             \Log::error('Failed to sync tags: ' . $e->getMessage());
-            \Log::error('SQL: ' . $e->getSql() ?? 'N/A');
+            \Log::error('Post ID: ' . ($post->id ?? 'NULL'));
+            \Log::error('Exception: ' . $e->getTraceAsString());
             throw $e;
         }
+    }
+    
+    private function extractCalloutType($class)
+    {
+        if (strpos($class, 'emerald') !== false) return 'emerald';
+        if (strpos($class, 'blue') !== false) return 'blue';
+        if (strpos($class, 'yellow') !== false) return 'yellow';
+        if (strpos($class, 'red') !== false) return 'red';
+        if (strpos($class, 'green') !== false) return 'green';
+        return 'emerald'; // default
+    }
+    
+    private function extractTextContent($element, $tagName)
+    {
+        $elements = $element->getElementsByTagName($tagName);
+        if ($elements->length > 0) {
+            return $elements->item(0)->textContent;
+        }
+        return '';
     }
     
     public function destroy(BlogPost $post): JsonResponse

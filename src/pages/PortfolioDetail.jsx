@@ -35,6 +35,17 @@ const PortfolioDetail = () => {
     fetchProject();
   }, [portfolioId]);
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-primary-500/30 border-t-primary-500 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white">در حال بارگذاری...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!project) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -43,17 +54,6 @@ const PortfolioDetail = () => {
           <Link to="/portfolio">
             <Button>بازگشت به نمونه کارها</Button>
           </Link>
-        </div>
-      </div>
-    );
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-8 h-8 border-2 border-primary-500/30 border-t-primary-500 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-white">در حال بارگذاری...</p>
         </div>
       </div>
     );

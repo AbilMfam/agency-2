@@ -1,9 +1,10 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { Plus, Trash2, Lightbulb, AlertCircle, CheckCircle, Info, AlertTriangle } from 'lucide-react';
 import { parseHtmlCallouts } from '../../utils/htmlParser';
 
 const CalloutBuilder = ({ value, onChange }) => {
   const [callouts, setCallouts] = useState([]);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const types = [
     { id: 'emerald', label: 'نکته', color: 'emerald', icon: Lightbulb },
@@ -12,41 +13,6 @@ const CalloutBuilder = ({ value, onChange }) => {
     { id: 'red', label: 'خطر', color: 'red', icon: AlertCircle },
     { id: 'green', label: 'موفقیت', color: 'green', icon: CheckCircle },
   ];
-
-  const addCallout = useCallback(() => {
-    const newCallout = {
-      id: Date.now(),
-      type: 'emerald',
-      title: '',
-      content: '',
-    };
-    const newCallouts = [...callouts, newCallout];
-    setCallouts(newCallouts);
-    
-    // Generate HTML and call onChange
-    const html = generateHTML(newCallouts);
-    onChange(html);
-  }, [callouts, onChange]);
-
-  const updateCallout = useCallback((id, field, value) => {
-    const newCallouts = callouts.map(callout => 
-      callout.id === id ? { ...callout, [field]: value } : callout
-    );
-    setCallouts(newCallouts);
-    
-    // Generate HTML and call onChange
-    const html = generateHTML(newCallouts);
-    onChange(html);
-  }, [callouts, onChange]);
-
-  const deleteCallout = useCallback((id) => {
-    const newCallouts = callouts.filter(callout => callout.id !== id);
-    setCallouts(newCallouts);
-    
-    // Generate HTML and call onChange
-    const html = generateHTML(newCallouts);
-    onChange(html);
-  }, [callouts, onChange]);
 
   const generateHTML = useCallback((calloutsList) => {
     return calloutsList.map(callout => {
@@ -75,17 +41,57 @@ const CalloutBuilder = ({ value, onChange }) => {
     }).join('\n');
   }, [types]);
 
+  const addCallout = useCallback(() => {
+    const newCallout = {
+      id: Date.now(),
+      type: 'emerald',
+      title: '',
+      content: '',
+    };
+    const newCallouts = [...callouts, newCallout];
+    setCallouts(newCallouts);
+    
+    // Update parent
+    const html = generateHTML(newCallouts);
+    onChange(html);
+  }, [callouts, generateHTML, onChange]);
+
+  
+  const updateCallout = useCallback((id, field, value) => {
+    const newCallouts = callouts.map(callout => 
+      callout.id === id ? { ...callout, [field]: value } : callout
+    );
+    setCallouts(newCallouts);
+    
+    // Update parent
+    const html = generateHTML(newCallouts);
+    onChange(html);
+  }, [callouts, generateHTML, onChange]);
+
+  const deleteCallout = useCallback((id) => {
+    const newCallouts = callouts.filter(callout => callout.id !== id);
+    setCallouts(newCallouts);
+    
+    // Update parent
+    const html = generateHTML(newCallouts);
+    onChange(html);
+  }, [callouts, generateHTML, onChange]);
+
   // Initialize with existing value or empty array
   useEffect(() => {
-    if (value) {
-      // Parse existing blocks to callout objects
-      const parsedCallouts = parseHtmlCallouts(value);
-      setCallouts(parsedCallouts);
-    } else {
-      setCallouts([]);
+    if (!isInitialized) {
+      if (value) {
+        // Parse existing blocks to callout objects
+        const parsedCallouts = parseHtmlCallouts(value);
+        setCallouts(parsedCallouts);
+      } else {
+        setCallouts([]);
+      }
+      setIsInitialized(true);
     }
-  }, [value]);
+  }, [value, isInitialized]);
 
+  
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -145,6 +151,7 @@ const CalloutBuilder = ({ value, onChange }) => {
                     onChange={(e) => updateCallout(callout.id, 'title', e.target.value)}
                     placeholder="عنوان بلاک"
                     className={`w-full bg-dark-700 border border-white/10 rounded-lg px-3 py-2 text-white pr-8`}
+                    maxLength={255}
                   />
                   <div className={`absolute right-2 top-1/2 -translate-y-1/2 w-1 h-4 bg-${callout.type}-400 rounded-full`}></div>
                 </div>
@@ -154,6 +161,7 @@ const CalloutBuilder = ({ value, onChange }) => {
                   placeholder="محتوای بلاک"
                   rows={3}
                   className="w-full bg-dark-700 border border-white/10 rounded-lg px-3 py-2 text-white resize-none"
+                  maxLength={1000}
                 />
               </div>
 

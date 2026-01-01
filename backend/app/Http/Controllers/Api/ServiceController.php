@@ -126,20 +126,36 @@ class ServiceController extends Controller
         $validated = $request->validate([
             'title' => 'sometimes|string|max:255',
             'description' => 'sometimes|string',
-            'short_title' => 'sometimes|string|max:100',
-            'full_description' => 'sometimes|string',
-            'icon' => 'sometimes|string',
-            'color' => 'sometimes|string',
-            'image' => 'sometimes|file|mimes:jpg,jpeg,png,webp|max:2048', // ✅ FIXED: Accept file instead of string
-            'features' => 'sometimes|array',
-            'process' => 'sometimes|array',
-            'gallery' => 'sometimes|array',
-            'order' => 'sometimes|integer',
-            'is_active' => 'boolean',
-            'is_featured' => 'boolean',
+            'short_title' => 'nullable|string|max:100',
+            'full_description' => 'nullable|string',
+            'icon' => 'nullable|string',
+            'color' => 'nullable|string',
+            'image' => 'nullable',
+            'features' => 'nullable',
+            'process' => 'nullable',
+            'gallery' => 'nullable',
+            'order' => 'nullable|integer',
+            'is_active' => 'nullable',
+            'is_featured' => 'nullable',
         ]);
 
-        // ✅ FIXED: Handle file upload
+        // Parse JSON strings for array fields
+        foreach (['features', 'process', 'gallery'] as $field) {
+            if (isset($validated[$field]) && is_string($validated[$field])) {
+                $decoded = json_decode($validated[$field], true);
+                $validated[$field] = $decoded !== null ? $decoded : $validated[$field];
+            }
+        }
+        
+        // Convert boolean strings
+        if (isset($validated['is_featured'])) {
+            $validated['is_featured'] = filter_var($validated['is_featured'], FILTER_VALIDATE_BOOLEAN);
+        }
+        if (isset($validated['is_active'])) {
+            $validated['is_active'] = filter_var($validated['is_active'], FILTER_VALIDATE_BOOLEAN);
+        }
+
+        // Handle file upload
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $filename = time() . '_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) 

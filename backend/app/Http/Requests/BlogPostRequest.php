@@ -16,21 +16,41 @@ class BlogPostRequest extends FormRequest
     }
 
     /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation()
+    {
+        // Parse JSON strings for array fields before validation
+        $requestData = $this->all();
+        \Log::info('Blog request data before parse:', $requestData);
+        foreach (['tags'] as $field) {
+            if (isset($requestData[$field]) && is_string($requestData[$field])) {
+                $decoded = json_decode($requestData[$field], true);
+                if ($decoded !== null) {
+                    $this->merge([$field => $decoded]);
+                    \Log::info("Parsed $field:", [$field => $decoded]);
+                }
+            }
+        }
+        \Log::info('Blog request data after parse:', $this->all());
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
-        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH') || $this->has('_method');
         
         return [
             'title' => $isUpdate ? 'sometimes|required|string|max:255' : 'required|string|max:255',
-            'slug' => $isUpdate ? 'sometimes|required|string|max:255|unique:blog_posts,slug,' . $this->route('id') : 'required|string|max:255|unique:blog_posts',
+            'slug' => $isUpdate ? 'sometimes|required|string|max:255|unique:blog_posts,slug,' . ($this->route('post')?->id ?? $this->route('post')) : 'required|string|max:255|unique:blog_posts',
             'excerpt' => $isUpdate ? 'sometimes|required|string|max:500' : 'required|string|max:500',
             'content' => $isUpdate ? 'sometimes|required|string' : 'required|string',
             'category' => $isUpdate ? 'sometimes|required|string|max:100' : 'required|string|max:100',
-            'author' => $isUpdate ? 'sometimes|required|string|max:255' : 'required|string|max:255',
+            'author' => 'nullable|string|max:255',
             'author_avatar' => 'nullable|string|max:255',
             'author_bio' => 'nullable|string|max:500',
             'thumbnail' => 'nullable|string|max:255',

@@ -63,8 +63,21 @@ class TeamMemberController extends Controller
             'social_links' => 'nullable|array',
             'skills' => 'nullable|array',
             'order' => 'nullable|integer',
-            'is_active' => 'boolean',
+            'is_active' => 'nullable',
         ]);
+
+        // Parse JSON strings for array fields
+        foreach (['social_links', 'skills'] as $field) {
+            if (isset($validated[$field]) && is_string($validated[$field])) {
+                $decoded = json_decode($validated[$field], true);
+                $validated[$field] = $decoded !== null ? $decoded : $validated[$field];
+            }
+        }
+
+        // Convert boolean strings
+        if (isset($validated['is_active'])) {
+            $validated['is_active'] = filter_var($validated['is_active'], FILTER_VALIDATE_BOOLEAN);
+        }
 
         $teamMember->update($validated);
         return response()->json(['success' => true, 'data' => $teamMember]);

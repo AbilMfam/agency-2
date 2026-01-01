@@ -48,35 +48,30 @@ export const parseHtmlCallouts = (data) => {
         }));
       }
     } catch (e) {
-      // If not JSON, parse as HTML
+      // If not JSON, parse as HTML using DOM
       const callouts = [];
+      
+      // Create a temporary DOM element to parse HTML
       const tempDiv = document.createElement('div');
       tempDiv.innerHTML = data;
       
-      // Find all callout containers
-      const calloutElements = tempDiv.querySelectorAll('[class*="bg-"][class*="/10"]');
+      // Find all callout divs
+      const calloutDivs = tempDiv.querySelectorAll('div[class*="bg-"][class*="-500/10"]');
       
-      calloutElements.forEach((element, index) => {
-        const classList = element.className;
-        let type = 'emerald'; // default
+      calloutDivs.forEach((div, index) => {
+        // Extract type from class
+        const classList = div.className;
+        const typeMatch = classList.match(/bg-(blue|yellow|red|green|emerald|purple|orange|pink)-500/);
+        const type = typeMatch ? typeMatch[1] : 'emerald';
         
-        // Extract type from class names
-        if (classList.includes('bg-blue-500')) type = 'blue';
-        else if (classList.includes('bg-yellow-500')) type = 'yellow';
-        else if (classList.includes('bg-red-500')) type = 'red';
-        else if (classList.includes('bg-green-500')) type = 'green';
-        else if (classList.includes('bg-emerald-500')) type = 'emerald';
-        else if (classList.includes('bg-purple-500')) type = 'purple';
-        else if (classList.includes('bg-orange-500')) type = 'orange';
-        else if (classList.includes('bg-pink-500')) type = 'pink';
-
-        // Extract title and content
-        const titleElement = element.querySelector('h4');
+        // Extract title
+        const titleElement = div.querySelector('h4[class*="text-"][class*="-400"]');
         const title = titleElement ? titleElement.textContent.trim() : '';
         
-        const contentElement = element.querySelector('div[class*="text-dark-300"], p[class*="text-dark-300"]');
+        // Extract content
+        const contentElement = div.querySelector('div[class*="text-dark-300"]');
         const content = contentElement ? contentElement.textContent.trim() : '';
-
+        
         // Only add if we have content
         if (title || content) {
           callouts.push({

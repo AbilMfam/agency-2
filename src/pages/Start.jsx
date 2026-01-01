@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Check, Building2, Target, Calendar, DollarSign } from 'lucide-react';
-import { services } from '../data/services';
+import { services as defaultServices } from '../data/services';
 import { Button, Card, Input, Textarea } from '../components/ui';
+import api from '../services/api';
 
 const steps = [
   { id: 1, title: 'نوع کسب‌وکار', icon: Building2 },
@@ -31,6 +32,7 @@ const budgetRanges = [
 const Start = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
+  const [services, setServices] = useState(defaultServices);
   const [formData, setFormData] = useState({
     businessType: '',
     services: [],
@@ -42,6 +44,20 @@ const Start = () => {
     description: '',
   });
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await api.getServices();
+        if (response.success && response.data?.length > 0) {
+          setServices(response.data);
+        }
+      } catch (error) {
+        // Fallback to default services
+      }
+    };
+    fetchServices();
+  }, []);
 
   const handleNext = () => {
     if (currentStep < 4) {
@@ -57,9 +73,25 @@ const Start = () => {
 
   const handleSubmit = async () => {
     setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setLoading(false);
-    navigate('/thank-you');
+    try {
+      await api.submitContact({
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        subject: `درخواست پروژه - ${formData.businessType}`,
+        message: `نوع کسب‌وکار: ${formData.businessType}\nخدمات: ${formData.services.join(', ')}\nبودجه: ${formData.budget}\nزمان‌بندی: ${formData.timeline}\nتوضیحات: ${formData.description}`,
+        type: 'project_request',
+        business_type: formData.businessType,
+        services: formData.services,
+        budget: formData.budget,
+        timeline: formData.timeline,
+      });
+      navigate('/thank-you');
+    } catch (error) {
+      alert('خطا در ارسال درخواست. لطفاً دوباره تلاش کنید.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const toggleService = (serviceId) => {

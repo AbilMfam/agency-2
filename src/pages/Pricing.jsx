@@ -1,10 +1,44 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { Check, X, Star, ArrowLeft } from 'lucide-react';
-import { packages } from '../data/packages';
+import { packages as defaultPackages } from '../data/packages';
 import { SectionTitle, Card, Button } from '../components/ui';
+import api from '../services/api';
 
 const Pricing = () => {
+  const [packages, setPackages] = useState(defaultPackages);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPackages = async () => {
+      try {
+        const response = await api.getPackages();
+        if (response.success && response.data?.length > 0) {
+          setPackages(response.data.map(pkg => ({
+            ...pkg,
+            features: pkg.features || [],
+            notIncluded: pkg.not_included || [],
+            popular: pkg.is_popular,
+          })));
+        }
+      } catch (error) {
+        // Fallback to default packages
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPackages();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="pt-24 min-h-screen flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-primary-500/30 border-t-primary-500 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="pt-24">
       <section className="section-padding relative overflow-hidden">

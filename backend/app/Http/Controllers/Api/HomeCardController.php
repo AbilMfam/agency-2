@@ -64,8 +64,13 @@ class HomeCardController extends Controller
             'value' => 'nullable|string',
             'suffix' => 'nullable|string',
             'order' => 'nullable|integer',
-            'is_active' => 'boolean',
+            'is_active' => 'nullable',
         ]);
+
+        // Convert boolean strings
+        if (isset($validated['is_active'])) {
+            $validated['is_active'] = filter_var($validated['is_active'], FILTER_VALIDATE_BOOLEAN);
+        }
 
         $homeCard->update($validated);
 

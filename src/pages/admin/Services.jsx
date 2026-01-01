@@ -27,7 +27,7 @@ const Services = () => {
 
   const fetchServices = async () => {
     try {
-      const response = await api.getServices();
+      const response = await api.getServices(true); // Use admin route
       setServices(response.data || []);
     } catch (error) {
       // Error handled silently
@@ -135,7 +135,7 @@ const Services = () => {
                   className="w-full h-40 object-cover"
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = 'http://127.0.0.1:8000/storage/placeholder.jpg';
+                    e.target.src = '/placeholder.svg';
                   }}
                 />
               )}

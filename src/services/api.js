@@ -1,4 +1,4 @@
-const API_BASE_URL = '/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api/v1';
 
 // Custom Error Classes
 export class ApiError extends Error {
@@ -217,8 +217,10 @@ class ApiService {
   }
 
   // Services
-  async getServices() {
-    return this.request('/services');
+  async getServices(forAdmin = false) {
+    // Use admin route if authenticated and forAdmin is true
+    const endpoint = (this.token && forAdmin) ? '/admin/services' : '/services';
+    return this.request(endpoint);
   }
 
   async getService(slug) {
@@ -343,7 +345,9 @@ class ApiService {
   // Portfolios
   async getPortfolios(params = {}) {
     const query = new URLSearchParams(params).toString();
-    return this.request(`/portfolios${query ? `?${query}` : ''}`);
+    // Use admin route if authenticated, otherwise public route
+    const endpoint = this.token ? '/admin/portfolios' : '/portfolios';
+    return this.request(`${endpoint}${query ? `?${query}` : ''}`);
   }
 
   async getPortfolio(slug) {
@@ -355,20 +359,25 @@ class ApiService {
     const formData = new FormData();
     
     Object.keys(data).forEach(key => {
-      if (key !== 'image' && key !== 'gallery') {
+      if (key !== 'thumbnail' && key !== 'gallery') {
         if (typeof data[key] === 'object' && data[key] !== null) {
           formData.append(key, JSON.stringify(data[key]));
-        } else {
-          formData.append(key, data[key]);
+        } else if (data[key] !== null && data[key] !== undefined) {
+          // Convert boolean to string for FormData
+          if (typeof data[key] === 'boolean') {
+            formData.append(key, data[key] ? '1' : '0');
+          } else {
+            formData.append(key, data[key]);
+          }
         }
       }
     });
     
-    // Handle single image file
-    if (data.image instanceof File) {
-      formData.append('image', data.image);
-    } else if (data.image && typeof data.image === 'string') {
-      formData.append('image', data.image);
+    // Handle thumbnail file
+    if (data.thumbnail instanceof File) {
+      formData.append('thumbnail', data.thumbnail);
+    } else if (data.thumbnail && typeof data.thumbnail === 'string') {
+      formData.append('thumbnail', data.thumbnail);
     }
     
     // Handle gallery files array
@@ -408,20 +417,33 @@ class ApiService {
     const formData = new FormData();
     
     Object.keys(data).forEach(key => {
-      if (key !== 'image' && key !== 'gallery') {
-        if (typeof data[key] === 'object' && data[key] !== null) {
-          formData.append(key, JSON.stringify(data[key]));
+      if (key !== 'thumbnail' && key !== 'gallery') {
+        const value = data[key];
+        // Skip null, undefined, and empty strings for optional fields
+        if (value === null || value === undefined || value === '') {
+          return; // Skip this field
+        }
+        
+        if (typeof value === 'object' && !Array.isArray(value)) {
+          formData.append(key, JSON.stringify(value));
+        } else if (Array.isArray(value)) {
+          formData.append(key, JSON.stringify(value));
         } else {
-          formData.append(key, data[key]);
+          // Convert boolean to string for FormData
+          if (typeof value === 'boolean') {
+            formData.append(key, value ? '1' : '0');
+          } else {
+            formData.append(key, value);
+          }
         }
       }
     });
     
-    // Handle single image file
-    if (data.image instanceof File) {
-      formData.append('image', data.image);
-    } else if (data.image && typeof data.image === 'string') {
-      formData.append('image', data.image);
+    // Handle thumbnail file
+    if (data.thumbnail instanceof File) {
+      formData.append('thumbnail', data.thumbnail);
+    } else if (data.thumbnail && typeof data.thumbnail === 'string') {
+      formData.append('thumbnail', data.thumbnail);
     }
     
     // Handle gallery files array
@@ -437,6 +459,12 @@ class ApiService {
 
     // Add method spoofing for FormData (browsers don't support PUT with multipart/form-data)
     formData.append('_method', 'PUT');
+
+    // Debug FormData
+    console.log('FormData contents:');
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
 
     const url = `${this.baseUrl}/admin/portfolios/${id}`;
     const headers = {};
@@ -464,8 +492,9 @@ class ApiService {
   }
 
   // Industries
-  async getIndustries() {
-    return this.request('/industries');
+  async getIndustries(forAdmin = false) {
+    const endpoint = (this.token && forAdmin) ? '/admin/industries' : '/industries';
+    return this.request(endpoint);
   }
 
   async getIndustry(slug) {
@@ -500,62 +529,87 @@ class ApiService {
   }
 
   async createBlogPost(data) {
-    // Check if data contains files (FormData)
-    if (data instanceof FormData) {
-      const url = `${this.baseUrl}/admin/blog`;
-      const headers = {};
-      if (this.token) {
-        headers['Authorization'] = `Bearer ${this.token}`;
+    // Convert object to FormData for consistency
+    const formData = new FormData();
+    
+    Object.keys(data).forEach(key => {
+      if (key !== 'thumbnail') {
+        if (typeof data[key] === 'object' && data[key] !== null && !Array.isArray(data[key])) {
+          formData.append(key, JSON.stringify(data[key]));
+        } else if (Array.isArray(data[key])) {
+          formData.append(key, JSON.stringify(data[key]));
+        } else if (data[key] !== null && data[key] !== undefined) {
+          formData.append(key, data[key]);
+        }
       }
-
-      const response = await fetch(url, {
-        method: 'POST',
-        headers,
-        body: data,
-      });
-
-      const responseData = await response.json();
-      if (!response.ok) {
-        this.handleErrorResponse(response, responseData);
-        throw new ApiError('خطا در ایجاد مقاله', response.status);
-      }
-      
-      return responseData;
-    } else {
-      // Regular JSON request
-      return this.request('/admin/blog', { method: 'POST', body: JSON.stringify(data) });
+    });
+    
+    // Handle thumbnail file if exists
+    if (data.thumbnail instanceof File) {
+      formData.append('thumbnail', data.thumbnail);
+    } else if (data.thumbnail && typeof data.thumbnail === 'string') {
+      formData.append('thumbnail', data.thumbnail);
     }
+
+    const url = `${this.baseUrl}/admin/blog`;
+    const headers = {};
+    if (this.token) {
+      headers['Authorization'] = `Bearer ${this.token}`;
+    }
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+
+    const responseData = await response.json();
+    if (!response.ok) {
+      this.handleErrorResponse(response, responseData);
+      throw new ApiError('خطا در ایجاد مقاله', response.status);
+    }
+    
+    return responseData;
   }
 
   async updateBlogPost(id, data) {
-    // Check if data contains files (FormData)
-    if (data instanceof FormData) {
-      // Add method spoofing for FormData (browsers don't support PUT with multipart/form-data)
-      data.append('_method', 'PUT');
-
-      const url = `${this.baseUrl}/admin/blog/${id}`;
-      const headers = {};
-      if (this.token) {
-        headers['Authorization'] = `Bearer ${this.token}`;
-      }
-
-      const response = await fetch(url, {
-        method: 'POST', // Use POST with _method: PUT for FormData
-        headers,
-        body: data,
-      });
-
-      const responseData = await response.json();
-      if (!response.ok) {
-        this.handleErrorResponse(response, responseData);
-        throw new ApiError('خطا در بروزرسانی مقاله', response.status);
-      }
-      
-      return responseData;
-    } else {
-      // Regular JSON request
-      return this.request(`/admin/blog/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+    // Use JSON for blog posts (no file uploads in update)
+    const jsonData = { ...data };
+    
+    // Remove thumbnail if it's a string (keep only files)
+    if (typeof jsonData.thumbnail === 'string') {
+      delete jsonData.thumbnail;
     }
+    
+    // Handle file upload separately if needed
+    let finalData = jsonData;
+    let headers = {
+      'Content-Type': 'application/json',
+    };
+    
+    if (this.token) {
+      headers['Authorization'] = `Bearer ${this.token}`;
+    }
+
+    const url = `${this.baseUrl}/admin/blog/${id}`;
+    
+    console.log('Blog JSON data:', finalData);
+    console.log('content_blocks type:', typeof finalData.content_blocks);
+    console.log('content_blocks value:', finalData.content_blocks);
+
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify(finalData),
+    });
+
+    const responseData = await response.json();
+    if (!response.ok) {
+      this.handleErrorResponse(response, responseData);
+      throw new ApiError('خطا در بروزرسانی مقاله', response.status);
+    }
+    
+    return responseData;
   }
 
   async deleteBlogPost(id) {
@@ -867,6 +921,9 @@ class ApiService {
       });
     }
 
+    // Add method spoofing for FormData (Laravel requires this for PUT with multipart/form-data)
+    formData.append('_method', 'PUT');
+
     const url = `${this.baseUrl}/admin/web-projects/${id}`;
     const headers = {};
     if (this.token) {
@@ -874,7 +931,7 @@ class ApiService {
     }
 
     const response = await fetch(url, {
-      method: 'PUT',
+      method: 'POST', // Use POST with _method: PUT for FormData
       headers,
       body: formData,
     });

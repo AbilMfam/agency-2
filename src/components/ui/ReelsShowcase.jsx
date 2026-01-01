@@ -228,6 +228,28 @@ const ReelsShowcase = () => {
     setTimeout(() => setIsUserScrolling(false), 5000); // Reset after 5 seconds
   };
 
+  const handleWheelScroll = (e) => {
+    if (scrollRef.current) {
+      e.preventDefault();
+      setIsUserScrolling(true);
+      setTimeout(() => setIsUserScrolling(false), 5000);
+      
+      const scrollAmount = e.deltaY;
+      const newScrollLeft = scrollRef.current.scrollLeft + scrollAmount;
+      
+      scrollRef.current.scrollTo({
+        left: newScrollLeft,
+        behavior: 'smooth'
+      });
+      
+      // Update current reel based on scroll position
+      const reelWidth = 280; // Approximate width of each reel including gap
+      const newCurrentReel = Math.round(newScrollLeft / reelWidth);
+      const boundedIndex = Math.max(0, Math.min(newCurrentReel, reels.length - 1));
+      setCurrentReel(boundedIndex);
+    }
+  };
+
   const scrollToReel = (index) => {
     setCurrentReel(index);
     setIsUserScrolling(true);
@@ -278,9 +300,10 @@ const ReelsShowcase = () => {
 
         <div 
           ref={scrollRef}
+          onWheel={handleWheelScroll}
           onScroll={handleUserScroll}
           className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide px-4 -mx-4"
-          style={{ scrollSnapType: 'x mandatory' }}
+          style={{ scrollSnapType: 'x mandatory', scrollBehavior: 'smooth' }}
         >
           {reels.map((reel, index) => (
             <div key={reel.id} style={{ scrollSnapAlign: 'center' }}>

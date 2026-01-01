@@ -93,7 +93,7 @@ const Team = () => {
             id: m.id,
             name: m.name,
             role: m.role,
-            avatar: m.image?.startsWith('http') ? m.image : `http://127.0.0.1:8000${m.image}`,
+            avatar: m.image,
             skills: m.skills || [],
             social: {
               instagram: m.social_links?.instagram ? `https://instagram.com/${m.social_links.instagram}` : null,

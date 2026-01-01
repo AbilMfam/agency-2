@@ -16,7 +16,9 @@ class ContentSeeder extends Seeder
     public function run(): void
     {
         // Services - Complete data from frontend
+        \DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         Service::truncate();
+        \DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         $services = [
             ['title' => 'فیلمبرداری', 'slug' => 'video-production', 'short_title' => 'فیلمبرداری', 'description' => 'تولید ویدیوهای حرفه‌ای با تجهیزات پیشرفته و تیم متخصص', 'full_description' => 'با استفاده از جدیدترین تجهیزات فیلمبرداری و تیمی از متخصصین باتجربه، ویدیوهای حرفه‌ای و جذابی برای کسب‌وکار شما تولید می‌کنیم.', 'icon' => 'Video', 'color' => 'from-red-500 to-orange-500', 'image' => '/storage/services/video-production.jpg', 'features' => ['فیلمبرداری با کیفیت 4K', 'نورپردازی حرفه‌ای', 'تیم مجرب', 'تجهیزات پیشرفته'], 'is_active' => true],
             ['title' => 'تدوین ویدیو', 'slug' => 'video-editing', 'short_title' => 'تدوین', 'description' => 'تدوین حرفه‌ای با جدیدترین تکنیک‌ها و ترندهای روز', 'full_description' => 'تدوین ویدیوهای شما با استفاده از جدیدترین نرم‌افزارها و تکنیک‌های روز دنیا.', 'icon' => 'Film', 'color' => 'from-purple-500 to-pink-500', 'image' => '/storage/services/video-editing.jpg', 'features' => ['تدوین حرفه‌ای', 'کالرگریدینگ', 'افکت‌های ویژه', 'صداگذاری'], 'is_active' => true],
@@ -34,7 +36,9 @@ class ContentSeeder extends Seeder
         }
 
         // Industries - Complete data from frontend
+        \DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         Industry::truncate();
+        \DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         $industries = [
             ['title' => 'تولید محتوا برای کافه و رستوران', 'slug' => 'cafe-restaurant', 'short_title' => 'کافه و رستوران', 'description' => 'تولید محتوای حرفه‌ای برای کافه‌ها و رستوران‌ها', 'full_description' => 'با تیم متخصص ما، کافه یا رستوران خود را به یک برند محبوب در فضای مجازی تبدیل کنید.', 'icon' => 'Coffee', 'color' => 'from-amber-500 to-orange-500', 'image' => '/storage/industries/cafe-restaurant.jpg', 'services' => ['عکاسی غذا', 'فیلمبرداری', 'ساخت ریلز', 'مدیریت پیج'], 'is_active' => true],
             ['title' => 'تولید محتوا برای صنعت خودرو', 'slug' => 'automotive', 'short_title' => 'خودرو', 'description' => 'تولید محتوای تخصصی برای نمایشگاه‌های خودرو', 'full_description' => 'با فیلمبرداری سینمایی و عکاسی حرفه‌ای از خودروها، برند شما را متمایز می‌کنیم.', 'icon' => 'Car', 'color' => 'from-blue-500 to-indigo-500', 'image' => '/storage/industries/automotive.jpg', 'services' => ['فیلمبرداری خودرو', 'عکاسی صنعتی', 'تیزر تبلیغاتی', 'مدیریت پیج'], 'is_active' => true],
@@ -59,7 +63,9 @@ class ContentSeeder extends Seeder
         }
 
         // Portfolios - Complete data from frontend
+        \DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         Portfolio::truncate();
+        \DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         $portfolios = [
             ['title' => 'کافه لمیز', 'slug' => 'cafe-lamiz', 'category' => 'cafe', 'description' => 'تولید محتوای ویدیویی برای کافه لمیز با تمرکز بر فضای دنج و منوی خاص', 'full_description' => 'کافه لمیز یکی از محبوب‌ترین کافه‌های تهران است که با همکاری ما توانست حضور دیجیتال خود را به طور چشمگیری افزایش دهد.', 'thumbnail' => '/storage/portfolios/cafe-lamiz.jpg', 'cover_image' => '/storage/portfolios/cafe-lamiz-cover.jpg', 'views' => '2.5M', 'growth' => '+340%', 'services' => ['فیلمبرداری', 'تدوین', 'تولید محتوا', 'سوشال مدیا'], 'tags' => ['کافه', 'رستوران', 'ریلز'], 'duration' => '۳ ماه', 'year' => '۱۴۰۲', 'client' => 'کافه لمیز', 'industry' => 'کافه و رستوران', 'results' => ['views' => '2,500,000+', 'followers' => '+15,000', 'engagement' => '8.5%'], 'is_active' => true, 'is_featured' => true],
             ['title' => 'کلینیک زیبایی رز', 'slug' => 'clinic-rose', 'category' => 'beauty', 'description' => 'کمپین محتوایی برای کلینیک زیبایی با تمرکز بر نتایج واقعی', 'full_description' => 'کلینیک زیبایی رز با هدف افزایش اعتماد مشتریان و نمایش نتایج واقعی خدمات، با ما همکاری کرد.', 'thumbnail' => '/storage/portfolios/clinic-rose.jpg', 'cover_image' => '/storage/portfolios/clinic-rose-cover.jpg', 'views' => '1.8M', 'growth' => '+280%', 'services' => ['عکاسی', 'تولید محتوا', 'سوشال مدیا', 'برندینگ'], 'tags' => ['زیبایی', 'کلینیک', 'پزشکی'], 'duration' => '۶ ماه', 'year' => '۱۴۰۲', 'client' => 'کلینیک رز', 'industry' => 'زیبایی و سلامت', 'results' => ['views' => '1,800,000+', 'followers' => '+22,000', 'engagement' => '12%'], 'is_active' => true, 'is_featured' => true],
@@ -76,7 +82,9 @@ class ContentSeeder extends Seeder
         }
 
         // Packages - Complete data from frontend
+        \DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         Package::truncate();
+        \DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         $packages = [
             ['name' => 'استارتر', 'slug' => 'starter', 'subtitle' => 'شروع حرفه‌ای', 'price' => 4900000, 'period' => 'ماهانه', 'description' => 'مناسب برای کسب‌وکارهای کوچک که تازه شروع کرده‌اند', 'features' => ['۸ پست اینستاگرام', '۴ ریلز ماهانه', '۱۵ استوری', 'تقویم محتوایی', 'گزارش ماهانه'], 'not_included' => ['فیلمبرداری حرفه‌ای', 'موشن گرافیک', 'مدیریت تبلیغات'], 'color' => 'from-slate-500 to-slate-600', 'is_active' => true, 'is_popular' => false],
             ['name' => 'رشد', 'slug' => 'growth', 'subtitle' => 'محبوب‌ترین', 'price' => 9900000, 'period' => 'ماهانه', 'description' => 'بهترین انتخاب برای رشد سریع و حرفه‌ای', 'features' => ['۱۲ پست اینستاگرام', '۸ ریلز ماهانه', '۳۰ استوری', 'تقویم محتوایی', 'گزارش هفتگی', '۱ روز فیلمبرداری', 'موشن گرافیک ساده', 'مدیریت کامنت‌ها'], 'not_included' => ['مدیریت تبلیغات'], 'color' => 'from-primary-500 to-secondary-500', 'is_active' => true, 'is_popular' => true],
@@ -88,7 +96,9 @@ class ContentSeeder extends Seeder
         }
 
         // Testimonials - Complete data from frontend
+        \DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         Testimonial::truncate();
+        \DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         $testimonials = [
             ['author' => 'علی محمدی', 'role' => 'مدیر کافه لمیز', 'company' => 'کافه لمیز', 'content' => 'همکاری با این تیم بهترین تصمیم برای رشد پیج ما بود. ویوهای میلیونی و رشد فالوور واقعی رو تجربه کردیم.', 'avatar' => '/storage/testimonials/ali-mohammadi.jpg', 'rating' => 5, 'industry' => 'کافه و رستوران', 'results' => '+340% رشد فالوور', 'is_active' => true],
             ['author' => 'دکتر سارا احمدی', 'role' => 'مدیر کلینیک زیبایی', 'company' => 'کلینیک رز', 'content' => 'نتایج فوق‌العاده بود. مراجعین ما چند برابر شدند و برند ما در فضای مجازی شناخته شد.', 'avatar' => '/storage/testimonials/sara-ahmadi.jpg', 'rating' => 5, 'industry' => 'زیبایی و سلامت', 'results' => '+250% افزایش مراجعین', 'is_active' => true],
@@ -104,7 +114,9 @@ class ContentSeeder extends Seeder
         }
 
         // Blog Posts - Complete data from frontend
+        \DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         BlogPost::truncate();
+        \DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         $blogPosts = [
             ['title' => '۱۰ نکته طلایی برای ساخت ریلز وایرال در ۲۰۲۵', 'slug' => 'instagram-reels-tips-2025', 'excerpt' => 'یاد بگیرید چگونه ریلز‌هایی بسازید که میلیون‌ها ویو بگیرند.', 'content' => '<p>در این مقاله به بررسی نکات مهم برای ساخت ریلز وایرال می‌پردازیم...</p>', 'category' => 'social-media', 'author' => 'تیم محتوا', 'author_avatar' => '/storage/testimonials/ali-mohammadi.jpg', 'thumbnail' => '/storage/blog/instagram-reels-tips.jpg', 'read_time' => 8, 'tags' => ['ریلز', 'اینستاگرام', 'وایرال'], 'is_published' => true, 'is_featured' => true],
             ['title' => 'راهنمای کامل ساخت تقویم محتوایی', 'slug' => 'content-calendar-guide', 'excerpt' => 'چگونه یک تقویم محتوایی حرفه‌ای بسازیم که به رشد پیج کمک کند.', 'content' => '<p>تقویم محتوایی یکی از مهم‌ترین ابزارهای مدیریت محتوا است...</p>', 'category' => 'content', 'author' => 'تیم استراتژی', 'author_avatar' => '/storage/testimonials/mohammad-rezaei.jpg', 'thumbnail' => '/storage/blog/content-calendar.jpg', 'read_time' => 12, 'tags' => ['تقویم محتوا', 'استراتژی', 'برنامه‌ریزی'], 'is_published' => true, 'is_featured' => true],

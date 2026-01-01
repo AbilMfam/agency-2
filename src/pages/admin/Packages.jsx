@@ -132,8 +132,8 @@ const Packages = () => {
       )}
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark-950/80 backdrop-blur-sm">
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-lg bg-dark-900 border border-white/10 rounded-2xl p-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark-950/80 backdrop-blur-sm overflow-y-auto">
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-lg bg-dark-900 border border-white/10 rounded-2xl p-6 my-8 max-h-[90vh] overflow-y-auto">
             <h2 className="text-xl font-bold text-white mb-6">{editingItem ? 'ویرایش پکیج' : 'افزودن پکیج جدید'}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">

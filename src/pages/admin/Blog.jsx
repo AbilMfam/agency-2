@@ -32,7 +32,7 @@ const Blog = () => {
     category: '',
     category_id: null,
     tags: [],
-    author: '',
+    author: 'ادمین',
     author_avatar: '',
     author_bio: '',
     read_time: 5,
@@ -121,8 +121,33 @@ const Blog = () => {
       };
       
       // Generate slug from title for both create and update
-      if (data.title) {
-        data.slug = data.title.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-');
+      if (data.title && !data.slug) {
+        // Transliterate Persian to Latin and create slug
+        const persianToLatin = {
+          'ا': 'a', 'ب': 'b', 'پ': 'p', 'ت': 't', 'ث': 's', 'ج': 'j', 'چ': 'ch',
+          'ح': 'h', 'خ': 'kh', 'د': 'd', 'ذ': 'z', 'ر': 'r', 'ز': 'z', 'ژ': 'zh',
+          'س': 's', 'ش': 'sh', 'ص': 's', 'ض': 'z', 'ط': 't', 'ظ': 'z', 'ع': 'a',
+          'غ': 'gh', 'ف': 'f', 'ق': 'gh', 'ک': 'k', 'گ': 'g', 'ل': 'l', 'م': 'm',
+          'ن': 'n', 'و': 'v', 'ه': 'h', 'ی': 'y', ' ': '-', 'ئ': 'y', 'آ': 'a'
+        };
+        
+        let slug = data.title.toLowerCase();
+        Object.keys(persianToLatin).forEach(key => {
+          slug = slug.replace(new RegExp(key, 'g'), persianToLatin[key]);
+        });
+        
+        // Remove non-alphanumeric characters except dash
+        slug = slug.replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-');
+        
+        // Remove consecutive dashes
+        slug = slug.replace(/-+/g, '-').replace(/^-|-$/g, '');
+        
+        // Ensure slug is not empty
+        if (!slug || slug === '-') {
+          slug = 'post-' + Date.now();
+        }
+        
+        data.slug = slug;
       }
       
       if (editingItem) {
@@ -141,11 +166,48 @@ const Blog = () => {
         setToast({ message: 'مقاله با موفقیت بروزرسانی شد', type: 'success' });
         await fetchData();
         
+        // Update formData with fresh data from the updated post
+        const updatedPosts = await api.getBlogPosts();
+        const updatedPost = updatedPosts.data.find(post => post.id === editingItem.id);
+        if (updatedPost) {
+          // Re-open modal with updated data
+          openModal(updatedPost);
+        }
+        
         // Trigger real-time update for frontend
         localStorage.setItem('blog_updated', Date.now().toString());
         localStorage.removeItem('blog_updated');
       } else {
-        data.slug = formData.slug || formData.title.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-');
+        // Generate slug for create
+        if (!data.slug) {
+          // Transliterate Persian to Latin and create slug
+          const persianToLatin = {
+            'ا': 'a', 'ب': 'b', 'پ': 'p', 'ت': 't', 'ث': 's', 'ج': 'j', 'چ': 'ch',
+            'ح': 'h', 'خ': 'kh', 'د': 'd', 'ذ': 'z', 'ر': 'r', 'ز': 'z', 'ژ': 'zh',
+            'س': 's', 'ش': 'sh', 'ص': 's', 'ض': 'z', 'ط': 't', 'ظ': 'z', 'ع': 'a',
+            'غ': 'gh', 'ف': 'f', 'ق': 'gh', 'ک': 'k', 'گ': 'g', 'ل': 'l', 'م': 'm',
+            'ن': 'n', 'و': 'v', 'ه': 'h', 'ی': 'y', ' ': '-', 'ئ': 'y', 'آ': 'a'
+          };
+          
+          let slug = data.title.toLowerCase();
+          Object.keys(persianToLatin).forEach(key => {
+            slug = slug.replace(new RegExp(key, 'g'), persianToLatin[key]);
+          });
+          
+          // Remove non-alphanumeric characters except dash
+          slug = slug.replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-');
+          
+          // Remove consecutive dashes
+          slug = slug.replace(/-+/g, '-').replace(/^-|-$/g, '');
+          
+          // Ensure slug is not empty
+          if (!slug || slug === '-') {
+            slug = 'post-' + Date.now();
+          }
+          
+          data.slug = slug;
+        }
+        
         const response = await api.createBlogPost(data);
         setPosts([response.data, ...posts]);
         setToast({ message: 'مقاله با موفقیت ایجاد شد', type: 'success' });
@@ -190,7 +252,12 @@ const Blog = () => {
       setFormData({ 
         ...item, 
         tags: Array.isArray(item.tags) ? item.tags : [],
-        content_blocks: item.content_blocks || '',
+        author: item.author || 'ادمین',
+        content_blocks: typeof item.content_blocks === 'string' 
+          ? item.content_blocks 
+          : Array.isArray(item.content_blocks) 
+            ? item.content_blocks.map(block => block.html || '').join('\n')
+            : '',
         read_time: item.read_time || 5,
         word_count: item.word_count || 0,
         views: item.views || 0,
@@ -217,7 +284,7 @@ const Blog = () => {
       setFormData({
         title: '', slug: '', excerpt: '', content: '', content_blocks: [], thumbnail: '',
         featured_image_alt: '', featured_image_caption: '',
-        category: '', category_id: null, tags: [], author: '', author_avatar: '', author_bio: '',
+        category: '', category_id: null, tags: [], author: 'ادمین', author_avatar: '', author_bio: '',
         read_time: 5, word_count: 0, views: 0, likes: 0,
         is_published: true, is_featured: false, allow_comments: true,
         status: 'draft', scheduled_at: '',
@@ -524,7 +591,11 @@ const Blog = () => {
                   </div>
                   
                   <CalloutBuilder 
-                    value={formData.content_blocks || ''}
+                    value={typeof formData.content_blocks === 'string' 
+                      ? formData.content_blocks 
+                      : Array.isArray(formData.content_blocks) 
+                        ? formData.content_blocks.map(block => block.html || '').join('\n')
+                        : ''}
                     onChange={(html) => {
                       // Add to content or update content_blocks
                       setFormData({...formData, content_blocks: html});
@@ -534,7 +605,12 @@ const Blog = () => {
                   <div className="bg-dark-800/50 border border-white/10 rounded-xl p-4">
                     <h4 className="text-white font-medium mb-3">پیش‌نمایش HTML</h4>
                     <pre className="bg-dark-900 rounded-lg p-3 text-xs text-green-400 overflow-auto max-h-40">
-                      {formData.content_blocks || '<!-- بلاک‌ها در اینجا نمایش داده می‌شوند -->'}
+                      {typeof formData.content_blocks === 'string' 
+                        ? formData.content_blocks 
+                        : Array.isArray(formData.content_blocks) 
+                          ? formData.content_blocks.map(block => block.html || '').join('\n')
+                          : '<!-- بلاک‌ها در اینجا نمایش داده می‌شوند -->'
+                      }
                     </pre>
                   </div>
                 </div>

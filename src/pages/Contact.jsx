@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Phone, Mail, MapPin, Clock, Send, Instagram, MessageCircle } from 'lucide-react';
 import { SectionTitle, Card, Button, Input, Textarea } from '../components/ui';
+import api from '../services/api';
 
 const contactInfo = [
   {
@@ -49,10 +50,15 @@ const Contact = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setLoading(false);
-    alert('پیام شما با موفقیت ارسال شد!');
-    setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+    try {
+      await api.submitContact(formData);
+      alert('پیام شما با موفقیت ارسال شد!');
+      setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+    } catch (error) {
+      alert('خطا در ارسال پیام. لطفاً دوباره تلاش کنید.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
