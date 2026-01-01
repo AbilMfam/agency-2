@@ -264,7 +264,7 @@ const ServiceDetail = () => {
                 <div className="mb-12">
                   <h2 className="text-2xl font-bold text-white mb-6">ویژگی‌ها و خروجی‌ها</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {service.features?.map((feature, index) => (
+                    {service.features?.ui_suggestion?.map((feature, index) => (
                       <motion.div
                         key={index}
                         initial={{ opacity: 0, x: -20 }}

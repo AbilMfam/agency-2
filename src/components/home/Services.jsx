@@ -26,7 +26,7 @@ const iconMap = {
 const ServiceCard = ({ service, index }) => {
   const [isHovered, setIsHovered] = useState(false);
   const IconComponent = typeof service.icon === 'string' ? iconMap[service.icon] : service.icon || Video;
-  const features = Array.isArray(service.features) ? service.features : [];
+  const features = Array.isArray(service.features?.ui_suggestion) ? service.features.ui_suggestion : [];
 
   return (
     <ScrollReveal delay={index * 0.1} variant="fadeUp">
@@ -55,17 +55,17 @@ const ServiceCard = ({ service, index }) => {
               <Video className="w-7 h-7 text-white" />
             </motion.div>
             
-            <h3 className="text-xl font-bold text-white mb-2 group-hover:text-primary-400 transition-colors">
+            <h3 className="text-lg sm:text-xl font-bold text-white mb-2 group-hover:text-primary-400 transition-colors">
               {service.title}
             </h3>
             
-            <p className="text-dark-300 text-sm leading-relaxed mb-4 line-clamp-2">
+            <p className="text-xs sm:text-sm text-dark-300 leading-relaxed mb-4 line-clamp-2">
               {service.description}
             </p>
 
             <div className="flex flex-wrap gap-2 mb-4">
               {features.slice(0, 3).map((feature, i) => (
-                <span key={i} className="px-2 py-1 rounded-md bg-white/10 text-white text-xs">
+                <span key={i} className="px-1.5 sm:px-2 py-1 rounded-md bg-white/10 text-white text-xs">
                   {feature}
                 </span>
               ))}
@@ -75,7 +75,7 @@ const ServiceCard = ({ service, index }) => {
               className="flex items-center gap-2 text-primary-400 font-medium"
               animate={{ x: isHovered ? -5 : 0 }}
             >
-              <span className="text-sm">بیشتر بدانید</span>
+              <span className="text-xs sm:text-sm">بیشتر بدانید</span>
               <ArrowLeft className="w-4 h-4" />
             </motion.div>
           </div>

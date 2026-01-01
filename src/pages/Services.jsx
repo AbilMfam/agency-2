@@ -87,26 +87,26 @@ const Services = () => {
                       })()}
                     </div>
                     
-                    <h3 className="text-xl font-bold text-white mb-3 group-hover:text-primary-400 transition-colors">
+                    <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-white mb-3 group-hover:text-primary-400 transition-colors">
                       {service.title}
                     </h3>
                     
-                    <p className="text-dark-400 mb-6 leading-relaxed">
+                    <p className="text-sm sm:text-base text-dark-400 mb-6 leading-relaxed line-clamp-3 sm:line-clamp-4">
                       {service.description}
                     </p>
 
                     <div className="flex flex-wrap gap-2 mb-6">
-                      {service.features.slice(0, 3).map((feature, i) => (
+                      {service.features?.ui_suggestion?.slice(0, 3).map((feature, i) => (
                         <span
                           key={i}
-                          className="px-3 py-1 rounded-full bg-white/5 text-dark-400 text-xs"
+                          className="px-2 sm:px-3 py-1 rounded-full bg-white/5 text-dark-400 text-xs"
                         >
                           {feature}
                         </span>
                       ))}
                     </div>
 
-                    <div className="flex items-center gap-2 text-primary-400 font-medium">
+                    <div className="flex items-center gap-2 text-primary-400 font-medium text-sm sm:text-base">
                       <span>اطلاعات بیشتر</span>
                       <ArrowLeft className="w-4 h-4 group-hover:-translate-x-2 transition-transform" />
                     </div>
