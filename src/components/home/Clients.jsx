@@ -72,7 +72,7 @@ const ClientCard = ({ client, index }) => {
   return (
     <motion.div
       whileHover={{ y: -5 }}
-      className="flex items-center gap-4 px-6 py-4 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-sm group cursor-pointer h-full min-w-[200px]"
+      className="flex items-center gap-4 px-6 py-4 rounded-2xl border border-white/10 backdrop-blur-sm group cursor-pointer h-full min-w-[200px]"
     >
       <div className={`w-12 h-12 rounded-xl bg-gradient-to-r ${client.color || 'from-primary-500 to-secondary-500'} flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow flex-shrink-0`}>
         {client.logo ? (
@@ -126,19 +126,6 @@ const Clients = () => {
         </motion.div>
 
         <div className="relative overflow-hidden">
-          <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-primary-500/30 to-transparent -translate-y-1/2 z-10" />
-          
-          {/* First row - scrolling right */}
-          <div className="overflow-hidden mb-6">
-            <div className="flex gap-6 animate-marquee-left" style={{ width: 'max-content' }}>
-              {[...clients, ...clients].map((client, index) => (
-                <div key={`row1-${index}`} className="flex-shrink-0">
-                  <ClientCard client={client} index={index} />
-                </div>
-              ))}
-            </div>
-          </div>
-          
           {/* Second row - scrolling left */}
           <div className="overflow-hidden">
             <div className="flex gap-6 animate-marquee-right" style={{ width: 'max-content' }}>

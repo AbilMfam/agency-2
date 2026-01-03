@@ -1,49 +1,56 @@
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { ArrowLeft, CheckCircle, Star, TrendingUp, Users, Play, Coffee, Car, Scissors, Stethoscope, ShoppingBag, Dumbbell, Target, Megaphone } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Star, TrendingUp, Users, Play, Coffee, Car, Scissors, Stethoscope, ShoppingBag, Dumbbell, Target, Megaphone, Heart } from 'lucide-react';
 import { SectionTitle, ScrollReveal, ProjectTimeline } from '../components/ui';
 import api from '../services/api';
 import React from 'react';
+import industryServicesMap from '../data/industryServices';
+import industryDescriptionsMap from '../data/industryDescriptions';
 
 const iconMap = {
+  Target,
+  Megaphone,
+  TrendingUp,
+  Users,
   Coffee,
   Car,
   Scissors,
   Stethoscope,
   ShoppingBag,
   Dumbbell,
+  Heart,
 };
 
 const generalIndustryServices = [
   {
-    title: "استراتژی رشد",
-    description: "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است.",
+    title: "تبلیغات هدفمند",
+    description: "در پروژه‌های خودرویی، کمپین‌های تبلیغاتی بر پایه داده و رفتار واقعی مخاطب طراحی شده‌اند. با تحلیل علایق کاربران، الگوهای تعامل و مسیر تصمیم‌گیری، تبلیغاتی اجرا شده که مستقیماً روی جذب لید باکیفیت و افزایش فروش تمرکز داشته‌اند، نه صرفاً افزایش بازدید.",
     icon: Target
   },
   {
-    title: "تبلیغات هدفمند",
-    description: "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است.",
+    title: "استراتژی رشد",
+    description: "برای برندهای خودرویی، AMONIX نقش بازوی استراتژیک را ایفا کرده است. از ایده‌پردازی سناریوهای ویدیویی تا طراحی کمپین‌ها، مسیر رشد محتوا به‌صورت هدفمند و مرحله‌به‌مرحله تعریف شده تا هم آگاهی از برند افزایش یابد و هم فروش تحریک شود.",
     icon: Megaphone
   },
   {
     title: "برندینگ تخصصی",
-    description: "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است.",
+    description: "محتوای تولیدشده در حوزه خودرو با هدف ایجاد اعتماد و اعتبار برند طراحی شده است. سناریوهای ویدیویی، لحن محتوا و نوع روایت به‌گونه‌ای انتخاب شده‌اند که برند به‌عنوان یک مرجع قابل‌اعتماد در ذهن مخاطب تثبیت شود، نه صرفاً یک فروشنده.",
     icon: TrendingUp
   },
   {
     title: "مدیریت جامعه",
-    description: "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است.",
+    description: "با تولید محتوای تعاملی و هدفمند، ارتباط پیوسته‌ای میان برند خودرویی و مخاطبان شکل گرفته است. تحلیل تعامل کاربران و بازخوردها باعث شده محتوا متناسب با دغدغه‌ها و علایق واقعی جامعه مخاطبان به‌روزرسانی شود.",
     icon: Users
   },
   {
     title: "تحلیل بازار",
-    description: "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است.",
+    description: "در این پروژه‌ها، تحلیل دقیق مخاطب، علایق، رفتار تعاملی و نرخ تبدیل با استفاده از هوش مصنوعی انجام شده است. این تحلیل‌ها مبنای تصمیم‌گیری برای نوع محتوا، پیام تبلیغاتی و اجرای کمپین‌ها بوده‌اند، نه حدس و تجربه شخصی.",
     icon: Target
   },
   {
     title: "بهینه‌سازی تبدیل",
-    description: "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است.",
+    description: "تمام محتوا و کمپین‌ها با هدف افزایش نرخ تبدیل طراحی شده‌اند؛ از تبدیل بازدیدکننده به لید تا تبدیل لید به مشتری. بررسی داده‌ها و اصلاح مداوم پیام‌ها باعث شده محتوا علاوه بر ایجاد اعتماد، مستقیماً فروش و اقدام کاربر را تقویت کند.",
     icon: TrendingUp
   }
 ];
@@ -133,8 +140,8 @@ const Industry = () => {
                 {industry.title}
               </h1>
 
-              <p className="text-xl text-dark-300 mb-8 leading-relaxed">
-                {industry.full_description || industry.description}
+              <p className="text-lg text-dark-300 mb-8 leading-relaxed">
+                {industryDescriptionsMap[slug] || industry.full_description || industry.description}
               </p>
 
               <div className="flex flex-wrap gap-4">
@@ -169,8 +176,8 @@ const Industry = () => {
           </ScrollReveal>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {generalIndustryServices.map((service, index) => {
-              const IconComponent = service.icon;
+            {(industryServicesMap[slug] || generalIndustryServices).map((service, index) => {
+              const IconComponent = iconMap[service.icon] || service.icon;
               return (
                 <ScrollReveal key={index} delay={index * 0.1}>
                   <motion.div

@@ -41,13 +41,16 @@ const Login = () => {
       >
         <div className="bg-dark-900/50 backdrop-blur-xl border border-white/10 rounded-2xl p-8">
           <div className="text-center mb-8">
-            <img 
-              src="/images/logo-transparent.svg" 
-              alt="AMONIX" 
-              className="h-16 w-auto mx-auto mb-4"
-            />
-            <h1 className="text-2xl font-bold text-white">ورود به داشبورد</h1>
-            <p className="text-dark-400 mt-2">پنل مدیریت amonix</p>
+            <div className="relative inline-flex items-center justify-center mb-6">
+              <div className="absolute inset-0 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-2xl blur-xl opacity-20"></div>
+              <img 
+                src="/images/logo.svg" 
+                alt="AMONIX" 
+                className="relative h-20 w-auto brightness-0 invert"
+              />
+            </div>
+            <h1 className="text-2xl font-bold text-white mb-2">ورود به داشبورد</h1>
+            <p className="text-dark-400">پنل مدیریت AMONIX</p>
           </div>
 
           {error && (

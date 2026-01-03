@@ -1,23 +1,28 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Eye, TrendingUp, ArrowLeft, Play, ExternalLink, Target, Coffee, Sparkles, ShoppingBag, Car, Shirt, Stethoscope, Dumbbell, GraduationCap } from 'lucide-react';
+import { Eye, TrendingUp, ArrowLeft, Play, ExternalLink, Target, Coffee, Sparkles, ShoppingBag, Car, Shirt, Stethoscope, Dumbbell, GraduationCap, Camera, Video, Monitor, Smartphone, Search, Megaphone, Users, Brain, Palette } from 'lucide-react';
 import { SectionTitle, ScrollReveal } from '../ui';
 import VideoPlayer from '../ui/VideoPlayer';
 import api from '../../services/api';
 
-const categoryIcons = {
-  all: Target, cafe: Coffee, beauty: Sparkles, shop: ShoppingBag,
-  automotive: Car, fashion: Shirt, medical: Stethoscope, fitness: Dumbbell, education: GraduationCap
-};
-
-const defaultCategories = [
-  { id: 'all', title: 'همه' },
-  { id: 'cafe', title: 'کافه و رستوران' },
-  { id: 'beauty', title: 'زیبایی و لاغری' },
-  { id: 'shop', title: 'فروشگاهی' },
-  { id: 'automotive', title: 'خودرویی' },
-  { id: 'fashion', title: 'استایل و لباس' },
+// Define all categories with their colors (same as Portfolio page)
+const allCategories = [
+  { id: 'all', title: 'همه پروژه‌ها', icon: Target, color: 'primary' },
+  // Visual categories - Purple
+  { id: 'filming', title: 'فیلمبرداری و تدوین ویدیو', icon: Video, color: 'purple' },
+  { id: 'graphic-design', title: 'طراحی گرافیک', icon: Palette, color: 'purple' },
+  { id: 'photography', title: 'عکاسی', icon: Camera, color: 'purple' },
+  { id: 'motion-graphics', title: 'موشن گرافیک', icon: Play, color: 'purple' },
+  // Digital categories - Blue
+  { id: 'web-design', title: 'طراحی سایت', icon: Monitor, color: 'blue' },
+  { id: 'app-design', title: 'طراحی اپلیکیشن', icon: Smartphone, color: 'blue' },
+  { id: 'seo', title: 'سئو و رنکینگ گوگل', icon: Search, color: 'blue' },
+  // Advertising categories - Green
+  { id: 'paid-ads', title: 'تبلیغات paid', icon: Megaphone, color: 'green' },
+  { id: 'social-media', title: 'سوشال مدیا', icon: Users, color: 'green' },
+  { id: 'ai-marketing', title: 'AI مارکتینگ', icon: Brain, color: 'green' },
+  { id: 'branding', title: 'برندینگ', icon: Target, color: 'green' }
 ];
 
 const PortfolioCard = ({ item, index }) => {
@@ -183,8 +188,16 @@ const Portfolio = () => {
 
         <ScrollReveal delay={0.1}>
           <div className="flex flex-wrap justify-center gap-3 mb-12">
-            {defaultCategories.map((category) => {
-              const IconComponent = categoryIcons[category.id] || Target;
+            {allCategories.map((category) => {
+              const IconComponent = category.icon;
+              const isActive = activeCategory === category.id;
+              const colorClasses = {
+                primary: 'from-primary-500 to-secondary-500 shadow-primary-500/25 hover:bg-primary-500/10',
+                purple: 'from-purple-500 to-purple-600 shadow-purple-500/25 hover:bg-purple-500/10',
+                blue: 'from-blue-500 to-blue-600 shadow-blue-500/25 hover:bg-blue-500/10',
+                green: 'from-green-500 to-green-600 shadow-green-500/25 hover:bg-green-500/10'
+              };
+              
               return (
                 <motion.button
                   key={category.id}
@@ -192,8 +205,8 @@ const Portfolio = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
-                    activeCategory === category.id
-                      ? 'bg-gradient-to-r from-primary-500 to-secondary-500 text-white shadow-lg shadow-primary-500/25'
+                    isActive
+                      ? `bg-gradient-to-r ${colorClasses[category.color]} text-white shadow-lg`
                       : 'bg-white/5 text-dark-300 hover:bg-white/10 hover:text-white border border-white/10'
                   }`}
                 >

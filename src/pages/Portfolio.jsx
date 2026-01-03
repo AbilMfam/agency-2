@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Eye, TrendingUp, Play, ExternalLink, ArrowLeft, Target, Coffee, ShoppingBag, Car, Shirt, Camera, Video, Monitor, Smartphone, Search, Megaphone, Users, Brain, Palette } from 'lucide-react';
 import { SectionTitle, ScrollReveal } from '../components/ui';
 import { WebProjects } from '../components/home';
@@ -75,12 +75,21 @@ const PortfolioCard = ({ item, index }) => {
 };
 
 const Portfolio = () => {
+  const [searchParams] = useSearchParams();
   const [activeCategory, setActiveCategory] = useState('all');
   const [portfolioItems, setPortfolioItems] = useState([]);
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Define all categories with their colors
+  // Check for category query parameter on mount
+  useEffect(() => {
+    const categoryParam = searchParams.get('category');
+    if (categoryParam) {
+      setActiveCategory(categoryParam);
+    }
+  }, [searchParams]);
+
+  // Define all categories with their colors (same as Portfolio page)
   const allCategories = [
     { id: 'all', title: 'همه پروژه‌ها', icon: Target, color: 'primary' },
     // Visual categories - Purple
@@ -90,7 +99,6 @@ const Portfolio = () => {
     { id: 'motion-graphics', title: 'موشن گرافیک', icon: Play, color: 'purple' },
     // Digital categories - Blue
     { id: 'web-design', title: 'طراحی سایت', icon: Monitor, color: 'blue' },
-    { id: 'ecommerce', title: 'طراحی فروشگاه آنلاین', icon: ShoppingBag, color: 'blue' },
     { id: 'app-design', title: 'طراحی اپلیکیشن', icon: Smartphone, color: 'blue' },
     { id: 'seo', title: 'سئو و رنکینگ گوگل', icon: Search, color: 'blue' },
     // Advertising categories - Green

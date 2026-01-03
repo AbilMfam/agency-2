@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Video, Film, Sparkles, Camera, FileText, Lightbulb, Share2, TrendingUp, Megaphone, Palette, Globe, Search, Smartphone, Users } from 'lucide-react';
+import { ArrowLeft, Video, Film, Sparkles, Camera, FileText, Lightbulb, Share2, TrendingUp, Megaphone, Palette, Globe, Search, Smartphone, Users, Instagram, Send, Brush, PlayCircle } from 'lucide-react';
 import { SectionTitle, ScrollReveal } from '../ui';
 import api from '../../services/api';
 import { services as defaultServices } from '../../data/services';
@@ -20,7 +20,11 @@ const iconMap = {
   Globe,
   Search,
   Smartphone,
-  Users
+  Users,
+  Instagram,      // برای اینستاگرام
+  Send,          // برای تلگرام
+  Brush,         // برای طراحی گرافیک
+  PlayCircle     // برای موشن گرافیک
 };
 
 const ServiceCard = ({ service, index }) => {

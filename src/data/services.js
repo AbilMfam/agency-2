@@ -12,7 +12,12 @@ import {
   Globe, 
   Search, 
   Smartphone, 
-  Users 
+  Users,
+  ShoppingBag,
+  Instagram,
+  Send,
+  Brush,
+  PlayCircle
 } from 'lucide-react';
 
 export const services = [
@@ -27,6 +32,7 @@ export const services = [
     image: 'https://images.unsplash.com/photo-1579632652768-6cb9dcf85912?w=800&h=600&fit=crop&q=80',
     features: ['فیلمبرداری با کیفیت 4K', 'نورپردازی حرفه‌ای', 'تیم مجرب', 'تجهیزات پیشرفته'],
     suitableFor: ['کافه و رستوران', 'کلینیک زیبایی', 'فروشگاه‌ها', 'استارتاپ‌ها'],
+    popular: true,
   },
   {
     id: 'video-editing',
@@ -39,6 +45,7 @@ export const services = [
     image: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=800&h=600&fit=crop&q=80',
     features: ['تدوین حرفه‌ای', 'کالرگریدینگ', 'افکت‌های ویژه', 'صداگذاری'],
     suitableFor: ['تولیدکنندگان محتوا', 'برندها', 'آموزش‌دهندگان', 'اینفلوئنسرها'],
+    popular: true,
   },
   {
     id: 'motion-graphics',
@@ -46,11 +53,12 @@ export const services = [
     shortTitle: 'موشن',
     description: 'انیمیشن‌های جذاب و خلاقانه برای برند شما',
     fullDescription: 'طراحی و ساخت موشن گرافیک‌های حرفه‌ای که پیام برند شما را به شکلی جذاب و به‌یادماندنی منتقل می‌کند.',
-    icon: Sparkles,
+    icon: PlayCircle,
     color: 'from-cyan-500 to-blue-500',
     image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&h=600&fit=crop&q=80',
     features: ['انیمیشن 2D و 3D', 'لوگو موشن', 'اینفوگرافیک متحرک', 'تیزر تبلیغاتی'],
     suitableFor: ['برندها', 'استارتاپ‌ها', 'شرکت‌ها', 'آژانس‌های تبلیغاتی'],
+    popular: true,
   },
   {
     id: 'photography',
@@ -96,9 +104,10 @@ export const services = [
     fullDescription: 'مدیریت کامل پیج‌های اینستاگرام، تلگرام، لینکدین و سایر شبکه‌های اجتماعی با استراتژی رشد ارگانیک.',
     icon: Share2,
     color: 'from-pink-500 to-rose-500',
-    image: 'https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?w=800&h=600&fit=crop&q=80',
+    image: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&h=600&fit=crop&q=80',
     features: ['مدیریت پیج', 'تعامل با مخاطب', 'رشد ارگانیک', 'گزارش‌دهی'],
     suitableFor: ['همه کسب‌وکارها', 'برندهای شخصی', 'شرکت‌ها', 'فروشگاه‌ها'],
+    popular: true,
   },
   {
     id: 'digital-marketing',
@@ -142,7 +151,7 @@ export const services = [
     shortTitle: 'گرافیک',
     description: 'طراحی گرافیکی خلاقانه و حرفه‌ای',
     fullDescription: 'طراحی پوستر، بنر، کاتالوگ، بروشور و انواع طرح‌های گرافیکی برای چاپ و دیجیتال.',
-    icon: Palette,
+    icon: Brush,
     color: 'from-teal-500 to-cyan-500',
     image: 'https://images.unsplash.com/photo-1626785774573-4b799315345d?w=800&h=600&fit=crop&q=80',
     features: ['طراحی پوستر', 'بنر تبلیغاتی', 'کاتالوگ', 'طراحی بسته‌بندی'],
@@ -183,6 +192,30 @@ export const services = [
     image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&h=600&fit=crop&q=80',
     features: ['Flutter', 'React Native', 'UI/UX موبایل', 'پشتیبانی'],
     suitableFor: ['استارتاپ‌ها', 'کسب‌وکارها', 'فروشگاه‌ها', 'خدمات'],
+  },
+  {
+    id: 'instagram-marketing',
+    title: 'بازاریابی اینستاگرام',
+    shortTitle: 'اینستاگرام',
+    description: 'مدیریت و بازاریابی تخصصی اینستاگرام',
+    fullDescription: 'مدیریت کامل پیج اینستاگرام با استراتژی محتوایی، تولید محتوای وایرال و افزایش فالوور واقعی.',
+    icon: Instagram,
+    color: 'from-pink-500 to-rose-500',
+    image: 'https://images.unsplash.com/photo-1611262588024-f790eaba96b3?w=800&h=600&fit=crop&q=80',
+    features: ['مدیریت پیج', 'تولید محتوا', 'تبلیغات اینستاگرام', 'تحلیل و گزارش'],
+    suitableFor: ['برندها', 'فروشگاه‌ها', 'خدمات', 'اینفلوئنسرها'],
+  },
+  {
+    id: 'telegram-marketing',
+    title: 'بازاریابی تلگرام',
+    shortTitle: 'تلگرام',
+    description: 'مدیریت کانال تلگرام و بازاریابی محتوا',
+    fullDescription: 'مدیریت حرفه‌ای کانال تلگرام، تولید محتوای جذاب، افزایش اعضا و تبلیغات هدفمند.',
+    icon: Send,
+    color: 'from-blue-500 to-cyan-500',
+    image: 'https://images.unsplash.com/photo-1573632890929-f9a2e65d1b12?w=800&h=600&fit=crop&q=80',
+    features: ['مدیریت کانال', 'تولید محتوا', 'ربات تلگرام', 'تبلیغات کانال'],
+    suitableFor: ['برندها', 'رسانه‌ها', 'خدمات', 'کسب‌وکارها'],
   },
   {
     id: 'influencer-marketing',

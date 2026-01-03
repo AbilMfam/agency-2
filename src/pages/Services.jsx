@@ -6,7 +6,7 @@ import {
   ArrowLeft, Video, Film, Camera, FileText, Share2, TrendingUp, 
   Palette, Globe, Search, Megaphone, PenTool, Smartphone, 
   BarChart3, Target, Zap, Sparkles, Instagram, Youtube,
-  Monitor, Code, Layout, Image, MessageSquare, Users
+  Monitor, Code, Layout, Image, MessageSquare, Users, Star
 } from 'lucide-react';
 import { SectionTitle, Card } from '../components/ui';
 import api from '../services/api';
@@ -96,7 +96,15 @@ const Services = () => {
               >
                 <Link to={`/services/${service.slug}`}>
                   <Card className="p-8 h-full group cursor-pointer">
-                    <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-r ${service.color || colorMap[service.slug] || 'from-primary-500 to-secondary-500'} flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                    <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-r ${service.color || colorMap[service.slug] || 'from-primary-500 to-secondary-500'} flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300 relative`}>
+                      {service.popular && (
+                        <div className="absolute -top-2 -right-2 z-10">
+                          <span className="px-2 py-1 rounded-full bg-gradient-to-r from-primary-500 to-secondary-500 text-white text-xs font-medium flex items-center gap-1">
+                            <Star className="w-3 h-3" fill="white" />
+                            محبوب
+                          </span>
+                        </div>
+                      )}
                       {(() => {
                         const IconComponent = iconMap[service.icon] || iconMap[service.slug] || Video;
                         return <IconComponent className="w-6 h-6 sm:w-8 sm:h-8 text-white" />;
@@ -123,8 +131,17 @@ const Services = () => {
                     </div>
 
                     <div className="flex items-center gap-2 text-primary-400 font-medium text-sm sm:text-base">
-                      <span>اطلاعات بیشتر</span>
-                      <ArrowLeft className="w-4 h-4 group-hover:-translate-x-2 transition-transform" />
+                      {service.title === 'تدوین ویدیو' ? (
+                        <Link to="/portfolios?category=filming" className="flex items-center gap-2 hover:text-white transition-colors">
+                          <span>نمونه‌کارهای موفق</span>
+                          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-2 transition-transform" />
+                        </Link>
+                      ) : (
+                        <>
+                          <span>اطلاعات بیشتر</span>
+                          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-2 transition-transform" />
+                        </>
+                      )}
                     </div>
                   </Card>
                 </Link>

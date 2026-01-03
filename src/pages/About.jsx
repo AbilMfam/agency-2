@@ -101,6 +101,44 @@ const About = () => {
             ))}
           </motion.div>
 
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-20">
+            <ScrollReveal>
+              <div className="relative rounded-2xl overflow-hidden">
+                <img 
+                  src="/storage/hero/agency-team.jpg"
+                  alt="تیم آژانس Amonix"
+                  className="w-full h-full object-cover rounded-2xl"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-dark-950/80 to-transparent" />
+              </div>
+            </ScrollReveal>
+            
+            <ScrollReveal delay={0.2}>
+              <div>
+                <h2 className="text-3xl font-bold text-white mb-6">
+                  داستان ما
+                </h2>
+                <p className="text-dark-300 leading-relaxed mb-6">
+                  ما در Amonix باور داریم دیجیتال مارکتینگ موفق، نتیجه‌ی کنار هم قرار گرفتن استراتژی، خلاقیت، تکنولوژی و داده است. به همین دلیل خدمات ما از طراحی سایت و طراحی فروشگاه آنلاین شروع می‌شود و تا سئو و رنکینگ در گوگل، طراحی اپلیکیشن و اجرای کامل مسیر رشد دیجیتال ادامه دارد.
+                </p>
+                <p className="text-dark-300 leading-relaxed mb-8">
+                  Amonix به برندها کمک می‌کند هویت منسجم و حرفه‌ای بسازند؛ از برندینگ، طراحی ساختار برند، طراحی لوگو و انتخاب پالت رنگی مناسب گرفته تا طراحی گرافیک، موشن گرافیک و تولید محتوای بصری که با استراتژی مارکتینگ هم‌راستا باشد.
+                </p>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {achievements.map((achievement, index) => (
+                    <div key={index} className="flex items-center gap-3">
+                      <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                        <CheckCircle className="w-4 h-4 text-green-400" />
+                      </div>
+                      <span className="text-dark-300 text-sm">{achievement}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </ScrollReveal>
+          </div>
+
           <div className="mb-20">
             <SectionTitle
               subtitle="خدمات ما"
@@ -197,44 +235,6 @@ const About = () => {
                 </ScrollReveal>
               ))}
             </div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-20">
-            <ScrollReveal>
-              <div className="relative rounded-2xl overflow-hidden">
-                <img 
-                  src="/storage/hero/agency-team.jpg"
-                  alt="تیم آژانس Amonix"
-                  className="w-full h-full object-cover rounded-2xl"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-dark-950/80 to-transparent" />
-              </div>
-            </ScrollReveal>
-            
-            <ScrollReveal delay={0.2}>
-              <div>
-                <h2 className="text-3xl font-bold text-white mb-6">
-                  داستان ما
-                </h2>
-                <p className="text-dark-300 leading-relaxed mb-6">
-                  ما در Amonix باور داریم دیجیتال مارکتینگ موفق، نتیجه‌ی کنار هم قرار گرفتن استراتژی، خلاقیت، تکنولوژی و داده است. به همین دلیل خدمات ما از طراحی سایت و طراحی فروشگاه آنلاین شروع می‌شود و تا سئو و رنکینگ در گوگل، طراحی اپلیکیشن و اجرای کامل مسیر رشد دیجیتال ادامه دارد.
-                </p>
-                <p className="text-dark-300 leading-relaxed mb-8">
-                  Amonix به برندها کمک می‌کند هویت منسجم و حرفه‌ای بسازند؛ از برندینگ، طراحی ساختار برند، طراحی لوگو و انتخاب پالت رنگی مناسب گرفته تا طراحی گرافیک، موشن گرافیک و تولید محتوای بصری که با استراتژی مارکتینگ هم‌راستا باشد.
-                </p>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {achievements.map((achievement, index) => (
-                    <div key={index} className="flex items-center gap-3">
-                      <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
-                        <CheckCircle className="w-4 h-4 text-green-400" />
-                      </div>
-                      <span className="text-dark-300 text-sm">{achievement}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </ScrollReveal>
           </div>
 
           <ScrollReveal>
