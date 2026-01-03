@@ -315,31 +315,6 @@ const ServiceDetail = () => {
                   </div>
                 </div>
               </ScrollReveal>
-
-              <ScrollReveal delay={0.3}>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-                  <div className="p-4 rounded-xl bg-white/[0.03] border border-white/10 text-center">
-                    <Users className="w-6 h-6 text-primary-400 mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-white">۵۰+</div>
-                    <div className="text-dark-400 text-sm">پروژه موفق</div>
-                  </div>
-                  <div className="p-4 rounded-xl bg-white/[0.03] border border-white/10 text-center">
-                    <Star className="w-6 h-6 text-yellow-400 mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-white">۴.۹</div>
-                    <div className="text-dark-400 text-sm">امتیاز مشتریان</div>
-                  </div>
-                  <div className="p-4 rounded-xl bg-white/[0.03] border border-white/10 text-center">
-                    <Clock className="w-6 h-6 text-green-400 mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-white">۷۲h</div>
-                    <div className="text-dark-400 text-sm">تحویل سریع</div>
-                  </div>
-                  <div className="p-4 rounded-xl bg-white/[0.03] border border-white/10 text-center">
-                    <Award className="w-6 h-6 text-secondary-400 mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-white">۱۰۰%</div>
-                    <div className="text-dark-400 text-sm">تضمین کیفیت</div>
-                  </div>
-                </div>
-              </ScrollReveal>
             </div>
 
             <div className="lg:col-span-1">

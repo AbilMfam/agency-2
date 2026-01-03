@@ -7,6 +7,7 @@ import Toast from '../../components/admin/Toast';
 
 const Portfolios = () => {
   const [portfolios, setPortfolios] = useState([]);
+  const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
@@ -22,7 +23,17 @@ const Portfolios = () => {
 
   useEffect(() => {
     fetchData();
+    fetchServices();
   }, []);
+
+  const fetchServices = async () => {
+    try {
+      const response = await api.getServices();
+      setServices(response.data || []);
+    } catch (error) {
+      console.error('Error fetching services:', error);
+    }
+  };
 
   const fetchData = async () => {
     try {
@@ -311,14 +322,12 @@ const Portfolios = () => {
                     onChange={(e) => setFormData({...formData, category: e.target.value})}
                     className="w-full bg-dark-800 border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-primary-500"
                   >
-                    <option value="cafe">کافه و رستوران</option>
-                    <option value="beauty">زیبایی و لاغری</option>
-                    <option value="shop">فروشگاهی</option>
-                    <option value="automotive">خودرویی</option>
-                    <option value="fashion">استایل و لباس</option>
-                    <option value="medical">پزشکی و سلامت</option>
-                    <option value="fitness">ورزشی</option>
-                    <option value="education">آموزشی</option>
+                    <option value="">انتخاب دسته‌بندی</option>
+                    {services.map((service) => (
+                      <option key={service.id} value={service.title}>
+                        {service.title}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div>

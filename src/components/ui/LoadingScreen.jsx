@@ -27,13 +27,13 @@ const LoadingScreen = ({ isLoading }) => {
               transition={{ duration: 0.5 }}
               className="relative w-32 h-32 flex items-center justify-center"
             >
-              <motion.span
-                className="text-4xl font-black bg-gradient-to-r from-primary-400 via-secondary-400 to-accent-400 bg-clip-text text-transparent"
+              <motion.img
+                src="/images/logo.svg"
+                alt="AMONIX"
+                className="w-20 h-auto"
                 animate={{ opacity: [1, 0.5, 1] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
-              >
-                آژانس
-              </motion.span>
+              />
             </motion.div>
           </div>
 

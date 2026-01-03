@@ -12,17 +12,76 @@ class IndustrySeeder extends Seeder
      */
     public function run(): void
     {
-        $industries = [
-            ['title' => 'کافه و رستوران', 'slug' => 'cafe-restaurant', 'icon' => 'Coffee', 'image' => '/storage/industries/cafe-restaurant.jpg', 'description' => 'تولید محتوا برای کافه‌ها و رستوران‌ها', 'is_active' => true],
-            ['title' => 'پزشکی و زیبایی', 'slug' => 'medical-beauty', 'icon' => 'Heart', 'image' => '/storage/industries/medical.jpg', 'description' => 'تولید محتوا برای کلینیک‌های پزشکی و زیبایی', 'is_active' => true],
-            ['title' => 'پوشاک و مد', 'slug' => 'fashion', 'icon' => 'Shirt', 'image' => '/storage/industries/fashion.jpg', 'description' => 'تولید محتوا برای برندهای پوشاک و مد', 'is_active' => true],
-            ['title' => 'خودرو', 'slug' => 'automotive', 'icon' => 'Car', 'image' => '/storage/industries/automotive.jpg', 'description' => 'تولید محتوا برای نمایشگاه‌های خودرو', 'is_active' => true],
-            ['title' => 'ورزشی', 'slug' => 'sports', 'icon' => 'Dumbbell', 'image' => '/storage/industries/fitness.jpg', 'description' => 'تولید محتوا برای باشگاه‌های ورزشی', 'is_active' => true],
-            ['title' => 'آموزشی', 'slug' => 'education', 'icon' => 'GraduationCap', 'image' => '/storage/industries/education.jpg', 'description' => 'تولید محتوا برای مراکز آموزشی', 'is_active' => true],
+        // Case 1: Find and update "Beauty" industry
+        $beautyIndustry = Industry::where('slug', 'like', '%beauty%')
+            ->orWhere('slug', 'medical-beauty')
+            ->orWhere('title', 'like', '%سالن زیبایی%')
+            ->orWhere('title', 'like', '%پزشکی و زیبایی%')
+            ->first();
+
+        if ($beautyIndustry) {
+            $beautyIndustry->update([
+                'title' => 'کلینیک زیبایی و سلامت',
+                'slug' => 'beauty-clinic',
+                'icon' => 'Heart',
+                'description' => 'تولید محتوا برای کلینیک‌های زیبایی و سلامت',
+                'is_active' => true
+            ]);
+        }
+
+        // Case 2: Find and update "Fashion" industry
+        $fashionIndustry = Industry::where('slug', 'fashion')
+            ->orWhere('title', 'like', '%پوشاک و مد%')
+            ->orWhere('title', 'like', '%مد و پوشاک%')
+            ->first();
+
+        if ($fashionIndustry) {
+            $fashionIndustry->update([
+                'title' => 'مد، پوشاک و استایل',
+                'description' => 'تولید محتوا برای برندهای مد، پوشاک و استایل لباس',
+                'is_active' => true
+            ]);
+        }
+
+        // Case 3: Ensure required industries exist or update them
+        $requiredIndustries = [
+            [
+                'title' => 'کافه و رستوران',
+                'slug' => 'cafe-restaurant',
+                'icon' => 'Coffee',
+                'image' => '/storage/industries/cafe-restaurant.jpg',
+                'description' => 'تولید محتوا برای کافه‌ها و رستوران‌ها'
+            ],
+            [
+                'title' => 'پزشکان',
+                'slug' => 'doctors',
+                'icon' => 'Stethoscope',
+                'color' => 'from-blue-500 to-cyan-500',
+                'image' => '/storage/industries/medical.jpg',
+                'description' => 'تولید محتوا برای مطب‌ها و کلینیک‌های پزشکان'
+            ],
+            [
+                'title' => 'خودرو',
+                'slug' => 'automotive',
+                'icon' => 'Car',
+                'image' => '/storage/industries/automotive.jpg',
+                'description' => 'تولید محتوا برای نمایشگاه‌های خودرو'
+            ],
+            [
+                'title' => 'ورزش و فیتنس',
+                'slug' => 'sports-fitness',
+                'icon' => 'Dumbbell',
+                'color' => 'from-green-500 to-emerald-500',
+                'image' => '/storage/industries/fitness.jpg',
+                'description' => 'تولید محتوا برای باشگاه‌های ورزشی و مراکز فیتنس'
+            ]
         ];
 
-        foreach ($industries as $industry) {
-            Industry::updateOrCreate(['slug' => $industry['slug']], $industry);
+        foreach ($requiredIndustries as $industry) {
+            Industry::updateOrCreate(
+                ['slug' => $industry['slug']],
+                array_merge($industry, ['is_active' => true])
+            );
         }
     }
 }

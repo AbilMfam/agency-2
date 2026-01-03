@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { ArrowLeft, CheckCircle, Star, TrendingUp, Users, Play, Coffee, Car, Scissors, Stethoscope, ShoppingBag, Dumbbell } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Star, TrendingUp, Users, Play, Coffee, Car, Scissors, Stethoscope, ShoppingBag, Dumbbell, Target, Megaphone } from 'lucide-react';
 import { SectionTitle, ScrollReveal, ProjectTimeline } from '../components/ui';
 import api from '../services/api';
 import React from 'react';
@@ -14,6 +14,39 @@ const iconMap = {
   ShoppingBag,
   Dumbbell,
 };
+
+const generalIndustryServices = [
+  {
+    title: "استراتژی رشد",
+    description: "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است.",
+    icon: Target
+  },
+  {
+    title: "تبلیغات هدفمند",
+    description: "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است.",
+    icon: Megaphone
+  },
+  {
+    title: "برندینگ تخصصی",
+    description: "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است.",
+    icon: TrendingUp
+  },
+  {
+    title: "مدیریت جامعه",
+    description: "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است.",
+    icon: Users
+  },
+  {
+    title: "تحلیل بازار",
+    description: "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است.",
+    icon: Target
+  },
+  {
+    title: "بهینه‌سازی تبدیل",
+    description: "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است.",
+    icon: TrendingUp
+  }
+];
 
 const Industry = () => {
   const { slug } = useParams();
@@ -124,26 +157,7 @@ const Industry = () => {
         </div>
       </section>
 
-      <section className="section-padding bg-dark-900/50">
-        <div className="container-custom mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {industry.results?.map((result, index) => (
-              <ScrollReveal key={index} delay={index * 0.1}>
-                <motion.div
-                  whileHover={{ y: -5 }}
-                  className="text-center p-8 rounded-2xl bg-white/[0.03] border border-white/10"
-                >
-                  <div className={`text-5xl font-black bg-gradient-to-r ${industry.color} bg-clip-text text-transparent mb-2`}>
-                    {result.metric}
-                  </div>
-                  <p className="text-dark-400">{result.label}</p>
-                </motion.div>
-              </ScrollReveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
+      
       <section className="section-padding">
         <div className="container-custom mx-auto">
           <ScrollReveal>
@@ -155,37 +169,23 @@ const Industry = () => {
           </ScrollReveal>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {(industry.services || []).map((service, index) => {
-              const serviceImages = [
-                'https://images.unsplash.com/photo-1579632652768-6cb9dcf85912?w=400&h=300&fit=crop',
-                'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=400&h=300&fit=crop',
-                'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=300&fit=crop',
-                'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&h=300&fit=crop',
-                'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop',
-                'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=400&h=300&fit=crop',
-              ];
+            {generalIndustryServices.map((service, index) => {
+              const IconComponent = service.icon;
               return (
                 <ScrollReveal key={index} delay={index * 0.1}>
                   <motion.div
-                    whileHover={{ y: -8 }}
-                    className="relative rounded-2xl overflow-hidden group cursor-pointer h-full"
+                    whileHover={{ y: -4 }}
+                    className="p-6 rounded-xl bg-slate-800/30 backdrop-blur-sm border border-white/10 hover:border-orange-500/50 transition-all duration-300 h-full"
                   >
-                    <div className="aspect-[4/3] relative">
-                      <img
-                        src={serviceImages[index % serviceImages.length]}
-                        alt={service}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-dark-950 via-dark-950/60 to-transparent" />
+                    <div className="w-12 h-12 rounded-lg bg-gradient-to-r from-orange-500 to-red-500 flex items-center justify-center mb-4">
+                      <IconComponent className="w-6 h-6 text-white" />
                     </div>
-                    <div className="absolute bottom-0 left-0 right-0 p-5">
-                      <div className={`w-10 h-10 rounded-lg bg-gradient-to-r ${industry.color} flex items-center justify-center mb-3`}>
-                        <CheckCircle className="w-5 h-5 text-white" />
-                      </div>
-                      <h3 className="text-lg font-bold text-white group-hover:text-primary-400 transition-colors">
-                        {service}
-                      </h3>
-                    </div>
+                    <h3 className="text-lg font-bold text-white mb-3">
+                      {service.title}
+                    </h3>
+                    <p className="text-dark-400 text-sm leading-relaxed">
+                      {service.description}
+                    </p>
                   </motion.div>
                 </ScrollReveal>
               );

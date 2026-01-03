@@ -12,7 +12,7 @@ const Layout = () => {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen flex flex-col overflow-x-hidden" style={{ contain: 'paint' }}>
+    <div className="min-h-screen flex flex-col overflow-x-hidden">
       <MouseFollower />
       <ScrollProgress />
       <Navbar />

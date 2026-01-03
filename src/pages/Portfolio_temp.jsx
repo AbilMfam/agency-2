@@ -6,7 +6,6 @@ import { SectionTitle, ScrollReveal } from '../components/ui';
 import { WebProjects } from '../components/home';
 import api from '../services/api';
 
-
 const PortfolioCard = ({ item, index }) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -80,7 +79,6 @@ const Portfolio = () => {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
 
-
   useEffect(() => {
     fetchPortfolios();
     fetchServices();
@@ -97,14 +95,19 @@ const Portfolio = () => {
 
   const fetchPortfolios = async () => {
     try {
-      const response = await api.getPortfolios();
-      setPortfolioItems(response.data || []);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching portfolios:', error);
-      setLoading(false);
-    }
-  };
+      setLoading(true);
+        const response = await api.getPortfolios();
+        if (response.success && response.data) {
+          setPortfolioItems(response.data);
+        }
+      } catch (error) {
+        // Error handled silently
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPortfolios();
+  }, []);
 
   const filteredItems = activeCategory === 'all' 
     ? portfolioItems 
@@ -115,21 +118,9 @@ const Portfolio = () => {
     ...services.map((service) => ({
       id: service.slug,
       title: service.title,
-      icon: Target
+      icon: Target // You can map service.icon if available
     }))
   ];
-
-  if (loading) {
-    return (
-      <div className="pt-24">
-        <div className="container-custom mx-auto">
-          <div className="flex justify-center items-center min-h-[400px]">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="pt-24">

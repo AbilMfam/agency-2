@@ -105,9 +105,9 @@ const Footer = () => {
       <div className="relative container-custom mx-auto px-4 md:px-8 py-12 md:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
           <div className="lg:col-span-2 text-center lg:text-right">
-            <Link to="/" className="inline-flex items-center gap-3 mb-6">
+            <Link to="/" className="inline-flex items-center mb-6">
               <img 
-                src="/images/logo-transparent.svg" 
+                src="/images/logo.svg" 
                 alt="AMONIX" 
                 className="h-12 w-auto"
               />

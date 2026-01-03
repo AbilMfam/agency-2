@@ -47,7 +47,7 @@ const Navbar = () => {
       name: 'صنایع', 
       path: '/industries',
       submenu: [
-        ...industries.slice(0, 4).map(i => ({
+        ...industries.map(i => ({
           name: i.title || i.short_title,
           path: `/industries/${i.slug}`
         })),
@@ -97,9 +97,9 @@ const Navbar = () => {
     >
       <nav className="container-custom mx-auto px-4 md:px-8">
         <div className="flex items-center justify-between h-20">
-          <Link to="/" className="flex items-center gap-3">
+          <Link to="/" className="flex items-center">
             <img 
-              src="/images/logo-transparent.svg" 
+              src="/images/logo.svg" 
               alt="AMONIX" 
               className="h-10 w-auto"
             />
@@ -178,9 +178,9 @@ const Navbar = () => {
           >
             <div className="flex flex-col h-full">
               <div className="flex items-center justify-between p-4 border-b border-white/10">
-                <Link to="/" className="flex items-center gap-3" onClick={() => setIsOpen(false)}>
+                <Link to="/" className="flex items-center" onClick={() => setIsOpen(false)}>
                   <img 
-                    src="/images/logo-transparent.svg" 
+                    src="/images/logo.svg" 
                     alt="AMONIX" 
                     className="h-10 w-auto"
                   />
