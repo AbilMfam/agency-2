@@ -93,7 +93,6 @@ const Portfolio = () => {
   const allCategories = [
     { id: 'all', title: 'همه پروژه‌ها', icon: Target, color: 'primary' },
     // Visual categories - Purple
-    { id: 'video', title: 'فیلمبرداری و تدوین', icon: Video, color: 'purple' },
     { id: 'filming', title: 'فیلمبرداری و تدوین ویدیو', icon: Video, color: 'purple' },
     { id: 'graphic-design', title: 'طراحی گرافیک', icon: Palette, color: 'purple' },
     { id: 'photography', title: 'عکاسی', icon: Camera, color: 'purple' },
